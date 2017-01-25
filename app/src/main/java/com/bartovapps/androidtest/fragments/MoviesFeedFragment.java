@@ -1,9 +1,7 @@
 package com.bartovapps.androidtest.fragments;
 
 
-import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,9 +13,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -35,7 +31,6 @@ import com.bartovapps.androidtest.adpaters.RecyclerItemClickListener;
 import com.bartovapps.androidtest.adpaters.SimpleCursorRecyclerAdapter;
 import com.bartovapps.androidtest.data.DbContract;
 import com.bartovapps.androidtest.data.DbOpenHelper;
-import com.bartovapps.androidtest.data.MoviesDataSource;
 import com.bartovapps.androidtest.data.MoviesProvider;
 import com.bartovapps.androidtest.model.Movie;
 import com.bartovapps.androidtest.parsers.MoviesJsonParser;
@@ -184,12 +179,14 @@ public class MoviesFeedFragment extends Fragment implements MoviesRecyclerAdapte
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.i(TAG, "onCreateLoader");
 
         return new CursorLoader(getActivity(), MoviesProvider.CONTENT_URI, null, null, null, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.i(TAG, "onLoadFinished");
         moviesRecyclerAdapter.changeCursor(data);
         mCursor = data;
     }

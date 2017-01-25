@@ -3,49 +3,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/activity_horizontal_margin"
-    tools:context="com.bartovapps.androidtest.fragments.MovieDetailsFragment">
+    tools:context="com.bartovapps.androidtest.fragments.MovieDetailsFragment"
+    android:background="@color/appBackground">
 
     <!-- TODO: Update blank fragment layout -->
 
 
-    
-    <ImageView
-        android:id="@+id/ivDetailedImage"
-        android:layout_width="@dimen/detailed_image_width"
-        android:layout_height="@dimen/detailed_image_height"
-        android:layout_margin="@dimen/details_image_margin"/>
-    
-    <TextView
-        android:id="@+id/tvReleased"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/ivDetailedImage"
-        android:textSize="35sp"
-        style="@style/text_view_style" />
+        <ImageView
+            android:id="@+id/ivDetailedImage"
+            android:layout_width="@dimen/detailed_image_width"
+            android:layout_height="@dimen/detailed_image_height"
+            android:layout_margin="@dimen/details_image_margin"/>
 
-    <TextView
-        android:id="@+id/tvDuration"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/ivDetailedImage"
-        android:layout_below="@+id/tvReleased"
-        android:textSize="22sp"
-        style="@style/text_view_style"/>
+        <TextView
+            android:id="@+id/tvReleased"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/ivDetailedImage"
+            android:textSize="35sp"
+            style="@style/text_view_style" />
 
-    <TextView
-        android:id="@+id/tvRating"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/ivDetailedImage"
-        android:layout_below="@+id/tvDuration"
-        android:textSize="22sp"
-        style="@style/text_view_style"/>
+        <TextView
+            android:id="@+id/tvDuration"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/ivDetailedImage"
+            android:layout_below="@+id/tvReleased"
+            android:textSize="22sp"
+            style="@style/text_view_style"/>
 
-    <TextView
-        android:id="@+id/overview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ivDetailedImage"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:padding="@dimen/textview_padding"/>
+        <TextView
+            android:id="@+id/tvRating"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/ivDetailedImage"
+            android:layout_below="@+id/tvDuration"
+            android:textSize="22sp"
+            style="@style/text_view_style"/>
 
-
+        <TextView
+            android:id="@+id/overview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ivDetailedImage"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:padding="@dimen/textview_padding"/>
 
 </RelativeLayout>

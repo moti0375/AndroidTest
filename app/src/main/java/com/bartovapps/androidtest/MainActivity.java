@@ -11,50 +11,52 @@ import com.bartovapps.androidtest.fragments.MovieDetailsFragment;
 import com.bartovapps.androidtest.fragments.MoviesFeedFragment;
 import com.bartovapps.androidtest.model.Movie;
 
-public class MainActivity extends AppCompatActivity implements MoviesFeedFragment.FragmentEventListener{
+public class MainActivity extends AppCompatActivity implements MoviesFeedFragment.FragmentEventListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String MOVIE_BUNDLE = "MOVIE_BUNDLE";
+    MovieDetailsFragment movieDetailsFragment;
     MoviesFeedFragment moviesFeedFragment;
     boolean mTablet;
+    ViewGroup viewGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
+        viewGroup = (ViewGroup) findViewById(R.id.llWideScreen);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mTablet = viewGroup != null;
+        Log.i(TAG, "onCreate: is tablet = " + mTablet);
 
         moviesFeedFragment = (MoviesFeedFragment) getSupportFragmentManager().findFragmentById(R.id.moviesFragment);
         if(moviesFeedFragment != null){
             moviesFeedFragment.setFragmentEventListener(this);
         }
-//        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, moviesFeedFragment).commit();
-
-        ViewGroup fragmentContainer = (ViewGroup) findViewById(R.id.details_fragment_container);
-        mTablet = (fragmentContainer != null);
-
-        Log.i(TAG, "onCreate: is tablet = " + mTablet);
-
-        if(mTablet){
-            MovieDetailsFragment movieDetailsFragment = new MovieDetailsFragment();
-            getSupportFragmentManager().beginTransaction().add(R.id.details_fragment_container, movieDetailsFragment).commit();
-        }
-
-
-
     }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
 
     @Override
     public void onFragmentEvent(Movie movie) {
         Bundle b = movie.toBundle();
 
-        if(mTablet){
-            MovieDetailsFragment detailsFragment = new MovieDetailsFragment();
-            detailsFragment.setArguments(b);
-            getSupportFragmentManager().beginTransaction().replace(R.id.details_fragment_container, detailsFragment).commit();
-        }else{
+        if (mTablet) {
+            movieDetailsFragment = (MovieDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.details_fragment);
+
+            if(movieDetailsFragment != null){
+                movieDetailsFragment.setMovie(new Movie(b));
+            }
+
+        } else {
             Intent intent = new Intent(MainActivity.this, MovieDetailsActivity.class);
             intent.putExtra(MOVIE_BUNDLE, b);
             startActivityForResult(intent, 1001);
