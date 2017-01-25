@@ -3,6 +3,7 @@ package com.bartovapps.androidtest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ViewGroup;
 
@@ -20,11 +21,16 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main2);
 
-        moviesFeedFragment = new MoviesFeedFragment();
-        moviesFeedFragment.setFragmentEventListener(this);
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, moviesFeedFragment).commit();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        moviesFeedFragment = (MoviesFeedFragment) getSupportFragmentManager().findFragmentById(R.id.moviesFragment);
+        if(moviesFeedFragment != null){
+            moviesFeedFragment.setFragmentEventListener(this);
+        }
+//        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, moviesFeedFragment).commit();
 
         ViewGroup fragmentContainer = (ViewGroup) findViewById(R.id.details_fragment_container);
         mTablet = (fragmentContainer != null);
