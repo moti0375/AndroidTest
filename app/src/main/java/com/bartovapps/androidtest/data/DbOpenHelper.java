@@ -27,7 +27,8 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     public static final String MOVIE_RATING = "rating";
     public static final String MOVIE_IMAGE_URI = "image_uri";
 
-    public static final String[] ALL_COLUMNS = {DbContract.MoviesEntry.COLUMN_TITLE,
+    public static final String[] ALL_COLUMNS = {DbContract.MoviesEntry._ID,
+            DbContract.MoviesEntry.COLUMN_TITLE,
             DbContract.MoviesEntry.COLUMN_RELEASED,
             DbContract.MoviesEntry.COLUMN_DURATION,
             DbContract.MoviesEntry.COLUMN_OVERVIEW,

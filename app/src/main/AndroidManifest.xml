@@ -20,6 +20,12 @@
         <activity android:name=".MovieDetailsActivity"></activity>
 
 
+
+        <provider
+            android:authorities="com.bartovapps.androidtest.data.moviesprovider"
+            android:name=".data.MoviesProvider"
+            android:exported="false"/>
+
     </application>
 
 </manifest>
