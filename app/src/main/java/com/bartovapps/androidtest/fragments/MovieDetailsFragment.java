@@ -64,6 +64,7 @@ public class MovieDetailsFragment extends Fragment {
         ivMovieImage = (ImageView) view.findViewById(R.id.ivDetailedImage);
         tvReleased = (TextView) view.findViewById(R.id.tvReleased);
         tvOverview = (TextView) view.findViewById(R.id.overview);
+        tvRating = (TextView) view.findViewById(R.id.tvRating);
     }
 
     public void setMovie(Movie movie){
@@ -72,6 +73,8 @@ public class MovieDetailsFragment extends Fragment {
         if(movie != null){
             tvOverview.setText(movie.getOverview());
             tvReleased.setText(movie.getRelease_date());
+            String rating = Double.toString(movie.getRating()) + getActivity().getString(R.string.rating_suffix_str);
+            tvRating.setText(rating);
             NumberFormat fmt = NumberFormat.getCurrencyInstance();
             Picasso.with(getActivity()).load(Utils.buildImageUri(movie.getImageUrl())).fit().centerCrop().into(ivMovieImage);
 

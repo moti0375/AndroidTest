@@ -9,8 +9,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by BartovMoti on 01/24/17.
@@ -26,34 +31,44 @@ public class MoviesJsonParser {
     public static final String RATING = "vote_average";
 
 
-
     public static List<Movie> parseFeed(String content) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        Calendar c = Calendar.getInstance();
+
+        Date date;
+        List<Movie> movies = new ArrayList<>();
+
         try {
 
             JSONObject reader = new JSONObject(content);
 
-            JSONArray ar =  reader.getJSONArray("results");
+
+            JSONArray ar = reader.getJSONArray("results");
 
             Log.i(TAG, "Json array size " + ar.length());
 
-            List<Movie> movies = new ArrayList<>();
 
             for (int i = 0; i < ar.length(); i++) {
                 JSONObject obj = ar.getJSONObject(i);
-                Movie movie = new Movie(obj.getString(TITLE), obj.getString(OVERVIEW), obj.getString(RELEASE_DATE), 0, obj.getDouble(RATING), obj.getString(IMAGE_PATH));
+                date = sdf.parse(obj.getString(RELEASE_DATE));
+                c.setTime(date);
+                Movie movie = new Movie(obj.getString(TITLE), obj.getString(OVERVIEW), "" + c.get(Calendar.YEAR), 0, obj.getDouble(RATING), obj.getString(IMAGE_PATH));
 
                 Log.i(TAG, movie.toString());
 
 
                 movies.add(movie);
 
-                }
+            }
 
-            return movies;
-        }catch (JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             return null;
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+        return movies;
+
     }
 
     private static Uri buildImageUri(JSONObject obj) {

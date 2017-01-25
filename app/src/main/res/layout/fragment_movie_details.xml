@@ -11,35 +11,32 @@
     
     <ImageView
         android:id="@+id/ivDetailedImage"
-        android:layout_width="150dp"
-        android:layout_height="300dp"
+        android:layout_width="@dimen/detailed_image_width"
+        android:layout_height="@dimen/detailed_image_height"
         android:layout_margin="@dimen/details_image_margin"/>
     
     <TextView
         android:id="@+id/tvReleased"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/tvDuration"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:padding="@dimen/textview_padding"/>
+        android:layout_toRightOf="@+id/ivDetailedImage"
+        android:textSize="35sp"
+        style="@style/text_view_style" />
 
     <TextView
         android:id="@+id/tvDuration"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/ivDetailedImage"
         android:layout_below="@+id/tvReleased"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:padding="@dimen/textview_padding"/>
+        android:textSize="22sp"
+        style="@style/text_view_style"/>
 
     <TextView
-        android:id="@+id/rating"
-        android:layout_width="match_parent"
+        android:id="@+id/tvRating"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/tvDuration"
+        android:layout_toRightOf="@+id/ivDetailedImage"
         android:layout_below="@+id/tvDuration"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:padding="@dimen/textview_padding"/>
+        android:textSize="22sp"
+        style="@style/text_view_style"/>
 
     <TextView
         android:id="@+id/overview"

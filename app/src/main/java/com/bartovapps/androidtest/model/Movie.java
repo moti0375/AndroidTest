@@ -36,6 +36,7 @@ public class Movie implements Parcelable {
             this.title = b.getString("title");
             this.overview = b.getString("overview");
             this.release_date = b.getString("release_date");
+            this.rating = b.getDouble("rating");
             this.duration = b.getLong("duration");
             this.imageUrl = b.getString("imageUrl");
         }
@@ -103,6 +104,7 @@ public class Movie implements Parcelable {
                 "title='" + title + '\'' +
                 ", overview='" + overview + '\'' +
                 ", release_date='" + release_date + '\'' +
+                ", rating='" + rating + '\'' +
                 ", duration=" + duration +
                 ", homepage='" + homepage + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
@@ -160,6 +162,7 @@ public class Movie implements Parcelable {
         b.putString("overview", this.overview);
         b.putString("release_date", this.release_date);
         b.putLong("duration", this.duration);
+        b.putDouble("rating", this.rating);
         b.putString("imageUrl", this.imageUrl);
 
         return b;

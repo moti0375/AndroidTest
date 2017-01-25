@@ -77,7 +77,7 @@ public class MoviesFeedFragment extends Fragment implements MoviesRecyclerAdapte
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Uri uri = Utils.buildRestQueryString(ApiManager.POPULAR_SEARCH);
+        Uri uri = Utils.buildRestQueryString(ApiManager.TOP_RATED_SEARCH);
         Log.i(TAG, "onActivityCreated: api uri: " + uri.toString());
         getDataWithVolley(uri);
     }
