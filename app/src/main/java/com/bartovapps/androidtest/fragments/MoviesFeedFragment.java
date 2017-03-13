@@ -26,7 +26,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bartovapps.androidtest.ApiManager;
 import com.bartovapps.androidtest.R;
-import com.bartovapps.androidtest.adpaters.MoviesRecyclerAdapter;
 import com.bartovapps.androidtest.adpaters.RecyclerItemClickListener;
 import com.bartovapps.androidtest.adpaters.SimpleCursorRecyclerAdapter;
 import com.bartovapps.androidtest.data.DbContract;
@@ -42,7 +41,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MoviesFeedFragment extends Fragment implements MoviesRecyclerAdapter.AdapterEventListener, LoaderManager.LoaderCallbacks<Cursor>{
+public class MoviesFeedFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
     public static final String TAG = MoviesFeedFragment.class.getSimpleName();
     private static final int LOADER_ID = 1;
@@ -62,7 +61,7 @@ public class MoviesFeedFragment extends Fragment implements MoviesRecyclerAdapte
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loaderManager = getLoaderManager();
-        loaderManager.initLoader(LOADER_ID, null, this);
+      //  loaderManager.initLoader(LOADER_ID, null, this);
     }
 
     @Override
@@ -84,6 +83,7 @@ public class MoviesFeedFragment extends Fragment implements MoviesRecyclerAdapte
                 if(mCursor != null && mCursor.getCount() > 0){
                     mCursor.moveToPosition(position);
                     Movie movie = new Movie();
+
                     movie.setTitle(mCursor.getString(mCursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_TITLE)));
                     movie.setRelease_date(mCursor.getString(mCursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_RELEASED)));
                     movie.setRating(mCursor.getDouble(mCursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_RATING)));
@@ -91,8 +91,9 @@ public class MoviesFeedFragment extends Fragment implements MoviesRecyclerAdapte
                     movie.setDuration(mCursor.getLong(mCursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_DURATION)));
                     movie.setImageUrl(mCursor.getString(mCursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_IMAGE_URI)));
 
+                    long movie_id = mCursor.getLong(mCursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_API_ID));
                     Log.i(TAG, "onItemClick: created movie: " + movie);
-                    mFragmentEventListener.onFragmentEvent(movie);
+                    mFragmentEventListener.onFragmentEvent(movie_id);
                 }
             }
 
@@ -172,12 +173,6 @@ public class MoviesFeedFragment extends Fragment implements MoviesRecyclerAdapte
     }
 
     @Override
-    public void itemClicked(Movie movie) {
-        Log.i(TAG, "itemClicked: " + movie);
-        mFragmentEventListener.onFragmentEvent(movie);
-    }
-
-    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.i(TAG, "onCreateLoader");
 
@@ -198,7 +193,7 @@ public class MoviesFeedFragment extends Fragment implements MoviesRecyclerAdapte
     }
 
     public interface FragmentEventListener{
-       void onFragmentEvent(Movie movie);
+       void onFragmentEvent(long movie_api_id);
     }
 
     private void addMoviesToDb(List<Movie> movies){
@@ -211,6 +206,7 @@ public class MoviesFeedFragment extends Fragment implements MoviesRecyclerAdapte
 
         for(Movie movie: movies){
             ContentValues values = new ContentValues();
+            values.put(DbContract.MoviesEntry.COLUMN_API_ID, movie.getApi_id());
             values.put(DbContract.MoviesEntry.COLUMN_TITLE, movie.getTitle());
             values.put(DbContract.MoviesEntry.COLUMN_OVERVIEW, movie.getOverview());
             values.put(DbContract.MoviesEntry.COLUMN_RELEASED, movie.getRelease_date());

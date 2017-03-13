@@ -2,7 +2,6 @@ package com.bartovapps.androidtest;
 
 import android.app.Application;
 import android.content.ContentValues;
-import android.content.Context;
 import android.net.Uri;
 import android.test.ApplicationTestCase;
 
@@ -17,7 +16,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     public ApplicationTest() {
         super(Application.class);
 
-           Movie movie = new Movie("Hagiga Basnooker", "Funny movie", "1975", 120, 9.5, null);
+           Movie movie = new Movie(100, "Hagiga Basnooker", "Funny movie", "1975", 120, 9.5, null);
 
             ContentValues values = new ContentValues();
             values.put(DbContract.MoviesEntry.COLUMN_TITLE, movie.getTitle());

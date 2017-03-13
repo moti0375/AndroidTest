@@ -20,14 +20,8 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     public static final String TABLE_MOVIES = "movies";
     public static final String MOVIE_ID = "_id";
 
-    public static final String MOVIE_TITLE = "title";
-    public static final String MOVIE_OVERVIEW = "overview";
-    public static final String MOVIE_RELEASED = "released";
-    public static final String MOVIE_DURATION = "duration";
-    public static final String MOVIE_RATING = "rating";
-    public static final String MOVIE_IMAGE_URI = "image_uri";
-
     public static final String[] ALL_COLUMNS = {DbContract.MoviesEntry._ID,
+            DbContract.MoviesEntry.COLUMN_API_ID,
             DbContract.MoviesEntry.COLUMN_TITLE,
             DbContract.MoviesEntry.COLUMN_RELEASED,
             DbContract.MoviesEntry.COLUMN_DURATION,
@@ -39,6 +33,7 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     private static final String TABLE_CREATE =
             "CREATE TABLE " + DbContract.MoviesEntry.TABLE_NAME + " (" +
                     DbContract.MoviesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    DbContract.MoviesEntry.COLUMN_API_ID + " NUMERIC, " +
                     DbContract.MoviesEntry.COLUMN_TITLE + " TEXT, " +
                     DbContract.MoviesEntry.COLUMN_RELEASED + " TEXT, " +
                     DbContract.MoviesEntry.COLUMN_DURATION + " NUMERIC, " +

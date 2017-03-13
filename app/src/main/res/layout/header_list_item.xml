@@ -1,0 +1,61 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/appBackground"
+    tools:context="com.bartovapps.androidtest.fragments.MovieDetailsFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        android:textStyle="bold|italic"
+        android:singleLine="true"
+        android:textSize="60sp"
+        android:gravity="center"/>
+
+    <ImageView
+        android:id="@+id/ivDetailedImage"
+        android:layout_below="@id/tvTitle"
+        android:layout_width="@dimen/detailed_image_width"
+        android:layout_height="@dimen/detailed_image_height"
+        android:layout_margin="@dimen/details_image_margin" />
+
+    <TextView
+        android:id="@+id/tvReleased"
+        style="@style/text_view_style"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvTitle"
+        android:layout_toEndOf="@+id/ivDetailedImage"
+        android:textSize="35sp" />
+
+    <TextView
+        android:id="@+id/tvDuration"
+        style="@style/text_view_style"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvReleased"
+        android:layout_toEndOf="@+id/ivDetailedImage"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/tvRating"
+        style="@style/text_view_style"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvDuration"
+        android:layout_toEndOf="@+id/ivDetailedImage"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/tvOverview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivDetailedImage"
+        android:padding="@dimen/textview_padding"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+</RelativeLayout>

@@ -36,4 +36,18 @@ public class Utils {
 
         return builder.build();
     }
+
+    public static Uri buildMovieInfoQueryString(long api_id){
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme(ApiManager.API_SCHEMA)
+                .authority(ApiManager.TMDB_BASE_URL)
+                .appendPath(ApiManager.API_VERSION_PARAM)
+                .appendPath(ApiManager.API_MOVIE_PARAM)
+                .appendPath(Long.toString(api_id))
+                .appendQueryParameter(ApiManager.API_KEY_URL_PARAM, ApiManager.TMDB_API_KEY)
+                .appendQueryParameter(ApiManager.API_APPEND_TO_RESP, ApiManager.API_VIDEOS_PARAM);
+
+
+        return builder.build();
+    }
 }

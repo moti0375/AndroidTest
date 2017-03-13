@@ -4,12 +4,15 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.List;
+
 /**
  * Created by BartovMoti on 01/24/17.
  */
 public class Movie implements Parcelable {
 
     long id;
+    long api_id;
     String title;
     String overview;
     String release_date;
@@ -18,11 +21,14 @@ public class Movie implements Parcelable {
     String imageUrl;
     double rating;
 
+    List<Video> videos;
+
 
     public Movie() {
     }
 
-    public Movie(String title, String overview, String release_date, long duration, double rating, String imageUrl) {
+    public Movie(long api_id, String title, String overview, String release_date, long duration, double rating, String imageUrl) {
+        this.api_id = api_id;
         this.title = title;
         this.overview = overview;
         this.release_date = release_date;
@@ -33,6 +39,7 @@ public class Movie implements Parcelable {
 
     public Movie(Bundle b){
         if(b != null){
+            this.api_id = b.getLong("api_id");
             this.title = b.getString("title");
             this.overview = b.getString("overview");
             this.release_date = b.getString("release_date");
@@ -40,6 +47,15 @@ public class Movie implements Parcelable {
             this.duration = b.getLong("duration");
             this.imageUrl = b.getString("imageUrl");
         }
+    }
+
+
+    public long getApi_id() {
+        return api_id;
+    }
+
+    public void setApi_id(long api_id) {
+        this.api_id = api_id;
     }
 
     public long getId() {
@@ -101,6 +117,7 @@ public class Movie implements Parcelable {
     @Override
     public String toString() {
         return "Movie{" +
+                "api_id='" + api_id + '\'' +
                 "title='" + title + '\'' +
                 ", overview='" + overview + '\'' +
                 ", release_date='" + release_date + '\'' +
@@ -108,6 +125,7 @@ public class Movie implements Parcelable {
                 ", duration=" + duration +
                 ", homepage='" + homepage + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
+                ", videos=" + (videos != null ? videos.toString() : "") + '\'' +
                 '}';
     }
 
@@ -118,6 +136,7 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(api_id);
         dest.writeString(this.title);
         dest.writeString(this.overview);
         dest.writeString(this.release_date);
@@ -127,6 +146,7 @@ public class Movie implements Parcelable {
     }
 
     protected Movie(Parcel in) {
+        this.api_id = in.readLong();
         this.title = in.readString();
         this.overview = in.readString();
         this.release_date = in.readString();
@@ -157,7 +177,7 @@ public class Movie implements Parcelable {
 
     public Bundle toBundle(){
         Bundle b = new Bundle();
-
+        b.putLong("api_id", this.api_id);
         b.putString("title", this.title);
         b.putString("overview", this.overview);
         b.putString("release_date", this.release_date);
@@ -166,5 +186,13 @@ public class Movie implements Parcelable {
         b.putString("imageUrl", this.imageUrl);
 
         return b;
+    }
+
+    public List<Video> getVideos() {
+        return videos;
+    }
+
+    public void setVideos(List<Video> videos) {
+        this.videos = videos;
     }
 }

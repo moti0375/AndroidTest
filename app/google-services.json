@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "551648424687",
+    "firebase_url": "https://niceapp-dcb42.firebaseio.com",
+    "project_id": "niceapp-dcb42",
+    "storage_bucket": "niceapp-dcb42.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:551648424687:android:12e8e3aa406b7fe9",
+        "android_client_info": {
+          "package_name": "com.bartovapps.androidtest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "551648424687-bo4hv6ithkc8kf38dkiv7gr1412i054f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQAboMj07sMuWssNxs1eUoz8qLpASSJU0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

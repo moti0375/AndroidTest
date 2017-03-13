@@ -9,12 +9,12 @@ import android.view.ViewGroup;
 
 import com.bartovapps.androidtest.fragments.MovieDetailsFragment;
 import com.bartovapps.androidtest.fragments.MoviesFeedFragment;
-import com.bartovapps.androidtest.model.Movie;
 
 public class MainActivity extends AppCompatActivity implements MoviesFeedFragment.FragmentEventListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String MOVIE_BUNDLE = "MOVIE_BUNDLE";
+    public static final String INTENT_LONG_EXTRA = "movie_api_id";
     MovieDetailsFragment movieDetailsFragment;
     MoviesFeedFragment moviesFeedFragment;
     boolean mTablet;
@@ -46,19 +46,19 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
 
 
     @Override
-    public void onFragmentEvent(Movie movie) {
-        Bundle b = movie.toBundle();
+    public void onFragmentEvent(long movie_api_id) {
 
         if (mTablet) {
             movieDetailsFragment = (MovieDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.details_fragment);
 
             if(movieDetailsFragment != null){
-                movieDetailsFragment.setMovie(new Movie(b));
+                movieDetailsFragment.setMovie(movie_api_id);
             }
 
         } else {
             Intent intent = new Intent(MainActivity.this, MovieDetailsActivity.class);
-            intent.putExtra(MOVIE_BUNDLE, b);
+          //  intent.putExtra(MOVIE_BUNDLE, b);
+            intent.putExtra(INTENT_LONG_EXTRA, movie_api_id);
             startActivityForResult(intent, 1001);
         }
     }

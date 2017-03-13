@@ -1,20 +1,18 @@
 package com.bartovapps.androidtest.adpaters;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bartovapps.androidtest.R;
-import com.bartovapps.androidtest.data.DbContract;
 import com.bartovapps.androidtest.model.Movie;
+import com.bartovapps.androidtest.model.Video;
 import com.bartovapps.androidtest.utils.Utils;
 import com.squareup.picasso.Picasso;
 
@@ -22,134 +20,166 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by BartovMoti on 01/24/17.
+ * Created by BartovMoti on 11/08/15.
  */
-public class MoviesRecyclerAdapter extends RecyclerView.Adapter<MoviesRecyclerAdapter.RecyclerViewHolder> {
+public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = MoviesRecyclerAdapter.class.getSimpleName();
+    public static final int TYPE_HEADER = 0;
+    public static final int TYPE_ITEM = 1;
+
     LayoutInflater inflater;
-    List<Movie> movies = new ArrayList<>();
-    Context mContext;
-    AdapterEventListener mAdapterEventListener;
-    CursorAdapter mCursorAdapter;
-    Cursor mCursor;
-    boolean mDataValid;
+    List<Video> data = new ArrayList<>();
+    Movie movie;
+    Activity context;
+    MoviesRecyclerItemClickListener clickListener;
 
-
-//    public MoviesRecyclerAdapter(Context context, List<Movie> movies) {
-//        inflater = LayoutInflater.from(context);
-//        this.mContext = context;
-//        this.movies = movies;
-//    }
-
-    public MoviesRecyclerAdapter(Context context, Cursor c) {
+    public MoviesRecyclerAdapter(Activity context) {
         inflater = LayoutInflater.from(context);
-        mContext = context;
-        mCursor = c;
+        this.context = context;
+    }
 
-        mCursorAdapter = new CursorAdapter(mContext, c, 0) {
-            @Override
-            public View newView(Context context, Cursor cursor, ViewGroup parent) {
-                View view = inflater.inflate(R.layout.movie_list_item, parent, false);
+    public void setItemClickedListener(MoviesRecyclerItemClickListener clickListener) {
 
-                return view;
-            }
+        this.clickListener = clickListener;
 
-            @Override
-            public void bindView(View view, Context context, final Cursor cursor) {
-                Log.i(TAG, "onBindViewHolder: cursor position: " + cursor.getPosition());
-                ImageView imageView = (ImageView) view.findViewById(R.id.ivMovieImage);
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case TYPE_HEADER:
+                View headerView = inflater.inflate(R.layout.header_list_item, parent, false);
+                HeaderViewHolder headerViewHolder = new HeaderViewHolder(headerView);
+                return headerViewHolder;
+            case TYPE_ITEM:
+                View itemView = inflater.inflate(R.layout.video_list_item, parent, false);
+                ItemViewHolder itemViewHolder = new ItemViewHolder(itemView);
+                return itemViewHolder;
+        }
+        throw new RuntimeException("there is no type that matches the type " + viewType + " + make sure your using types correctly");
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+        if (holder instanceof HeaderViewHolder) {
+            Log.i(TAG, "onBindViewHolder instanceof ItemViewHolder");
+
+            ((HeaderViewHolder) holder).tvTitle = (TextView) ((HeaderViewHolder) holder).itemView.findViewById(R.id.tvTitle);
+            ((HeaderViewHolder) holder).ivHeaderImage = (ImageView) ((HeaderViewHolder) holder).itemView.findViewById(R.id.ivDetailedImage);
+            ((HeaderViewHolder) holder).tvReleased = (TextView) ((HeaderViewHolder) holder).itemView.findViewById(R.id.tvReleased);
+            ((HeaderViewHolder) holder).tvDuration = (TextView) ((HeaderViewHolder) holder).itemView.findViewById(R.id.tvDuration);
+            ((HeaderViewHolder) holder).tvRating = (TextView) ((HeaderViewHolder) holder).itemView.findViewById(R.id.tvRating);
+            ((HeaderViewHolder) holder).tvOverview = (TextView) ((HeaderViewHolder) holder).itemView.findViewById(R.id.tvOverview);
+
+            ((HeaderViewHolder) holder).tvTitle.setText(movie.getTitle());
+            Picasso.with(context).load(Utils.buildImageUri(movie.getImageUrl())).fit().centerCrop().into(((HeaderViewHolder) holder).ivHeaderImage);
+            ((HeaderViewHolder) holder).tvReleased.setText(movie.getRelease_date());
+            ((HeaderViewHolder) holder).tvDuration.setText(movie.getDuration() + "Min");
+            ((HeaderViewHolder) holder).tvRating.setText(movie.getRelease_date() + "/10");
+            ((HeaderViewHolder) holder).tvOverview.setText(movie.getOverview());
 
 
-                if (cursor != null && cursor.getCount() > 0) {
-                    Uri imageUri = Utils.buildImageUri(cursor.getString(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_IMAGE_URI)));
-                    Picasso.with(mContext).load(imageUri).fit().centerCrop().into(imageView);
-//                    view.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//
-//                            Toast.makeText(mContext, "Item " + cursor.getPosition() + " was clicked", Toast.LENGTH_SHORT).show();
-//                            if (mAdapterEventListener != null) {
-//                                //mAdapterEventListener.itemClicked(movies.get(position));
-//                            }
-//                        }
-//                    });
+            //cast holder to VHItem and set data
+        } else if (holder instanceof ItemViewHolder) {
+            Log.i(TAG, "onBindViewHolder instanceof ItemViewHolder");
+            ((ItemViewHolder) holder).tvVideoTitle = (TextView) ((ItemViewHolder) holder).itemView.findViewById(R.id.tvVideoTitle);
+            ((ItemViewHolder) holder).tvVideoTitle.setText(data.get(position - 1).getTitle());
+
+            ((ItemViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(context, "Video " + (position - 1) + "was clicked..", Toast.LENGTH_SHORT).show();
+                    clickListener.onItemClicked(data.get(position - 1));
                 }
-                //  holder.itemView.setActivated(selectedItems.get(position, false));
-            }
-        };
+            });
 
+            //cast holder to VHHeader and set data for header.
+        }
     }
 
     @Override
-    public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = mCursorAdapter.newView(mContext, mCursorAdapter.getCursor(), parent);
-        RecyclerViewHolder viewHolder = new RecyclerViewHolder(v);
-        return viewHolder;
+    public int getItemViewType(int position) {
+        if (position == 0)
+            return TYPE_HEADER;
+
+        return TYPE_ITEM;
     }
 
-    @Override
-    public void onBindViewHolder(RecyclerViewHolder holder, final int position) {
-
-        mCursorAdapter.getCursor().moveToPosition(position); //EDITED: added this line as suggested in the comments below, thanks :)
-        mCursorAdapter.bindView(holder.itemView, mContext, mCursorAdapter.getCursor());
-
-
-    }
 
     @Override
     public int getItemCount() {
-
-        if (mDataValid) {
-            Log.i(TAG, "getItemCount: " + mCursorAdapter.getCount());
-            return mCursorAdapter.getCount();
-        }
-        return 0;
-
-    }
-
-
-    class RecyclerViewHolder extends RecyclerView.ViewHolder {
-
-        ImageView movieImage;
-
-        View mView;
-
-        public RecyclerViewHolder(View itemView) {
-            super(itemView);
-            movieImage = (ImageView) itemView.findViewById(R.id.ivMovieImage);
-            //drawerRowIcon.setOnClickListener(this);
-            mView = itemView;
-
-        }
-
-    }
-
-    public void updateCursor(Cursor data) {
-        Log.i(TAG, "updateCursor called");
-        mCursor = data;
-        if (data != null) {
-            mDataValid = true;
-            Log.i(TAG, "New cursor size: " + data.getCount());
-
-
-            Cursor oldCursor = mCursorAdapter.swapCursor(data);
-            if (oldCursor != null) {
-                oldCursor.close();
-                Log.i(TAG, "old cursor closed");
+        int count = 0;
+        if (movie == null) {
+            count = 0;
+        }else{
+            if(data.isEmpty()){
+                count = 1;
+            }else{
+                count = data.size() + 1;
             }
         }
-        notifyDataSetChanged();
+
+        Log.i(TAG, "get item count: " + count);
+        return count;
     }
 
 
-    public void setAdapterEventListener(AdapterEventListener adapterEventListener) {
-        mAdapterEventListener = adapterEventListener;
+    class HeaderViewHolder extends RecyclerView.ViewHolder {
+
+        public TextView tvTitle;
+        public ImageView ivHeaderImage;
+        public TextView tvReleased;
+        public TextView tvDuration;
+        public TextView tvRating;
+        public TextView tvOverview;
+        public View itemView;
+
+        public HeaderViewHolder(View itemView) {
+            super(itemView);
+            //drawerRowIcon.setOnClickListener(this);
+            this.itemView = itemView;
+        }
+
+    }
+
+    class ItemViewHolder extends RecyclerView.ViewHolder {
+
+        public TextView tvVideoTitle;
+        public View itemView;
+
+        public ItemViewHolder(View itemView) {
+            super(itemView);
+            //drawerRowIcon.setOnClickListener(this);
+            this.itemView = itemView;
+        }
+
     }
 
 
-    public interface AdapterEventListener {
-        void itemClicked(Movie movie);
+    public void updateVideos(Movie movie, List<Video> data) {
+        this.movie = movie;
+
+        if (this.data != null) {
+            this.data.clear();
+        }
+
+        this.data.addAll(data);
+
+            Log.i(TAG, "data size: " + this.data.size());
+
+            context.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    notifyDataSetChanged();
+                }
+            });
+
+
+    }
+
+    public interface MoviesRecyclerItemClickListener {
+        void onItemClicked(Video video);
     }
 
 

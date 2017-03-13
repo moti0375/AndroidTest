@@ -16,20 +16,15 @@
         android:layout_weight="1"
         tools:layout="@layout/fragment_movies_feed"/>
 
-    <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
 
         <fragment
             android:id="@+id/details_fragment"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            class="com.bartovapps.androidtest.fragments.MovieDetailsFragment"
             android:layout_weight="1"
+            class="com.bartovapps.androidtest.fragments.MovieDetailsFragment"
             tools:layout="@layout/fragment_movie_details">
         </fragment>
-    </ScrollView>
 
 
 </LinearLayout>

@@ -11,6 +11,7 @@ public class DbContract {
         public static final String TABLE_NAME = "movies";
 
         public static final String COLUMN_ID = "_id";
+        public static final String COLUMN_API_ID = "api_id";
         public static final String COLUMN_TITLE    = "title";
         public static final String COLUMN_RELEASED = "released";
         public static final String COLUMN_DURATION = "duration";
