@@ -25,6 +25,7 @@ import com.bartovapps.androidtest.R;
 import com.bartovapps.androidtest.adpaters.MoviesRecyclerAdapter;
 import com.bartovapps.androidtest.model.Movie;
 import com.bartovapps.androidtest.model.Trailer;
+import com.bartovapps.androidtest.movies.MoviesFeedFragment;
 import com.bartovapps.androidtest.utils.Utils;
 import com.google.gson.Gson;
 
@@ -36,6 +37,7 @@ import java.util.List;
 public class MovieDetailsFragment extends Fragment implements MoviesRecyclerAdapter.MoviesRecyclerItemClickListener, DetailsContract.View {
 
     public static final String TAG = MovieDetailsFragment.class.getSimpleName();
+    public static final String MOVIE_ID_ARG = "movieId";
     ImageView ivMovieImage;
     TextView tvReleased;
     TextView tvOverview;
@@ -48,7 +50,12 @@ public class MovieDetailsFragment extends Fragment implements MoviesRecyclerAdap
     DetailsContract.Presenter mPresenter;
     long mMovieId;
 
-    public MovieDetailsFragment() {
+    public static MovieDetailsFragment newInstance(long movieId) {
+        MovieDetailsFragment f = new MovieDetailsFragment();
+        Bundle b = new Bundle();
+        b.putLong(MOVIE_ID_ARG, movieId);
+        f.setArguments(b);
+        return f;
     }
 
     @Override
@@ -67,6 +74,8 @@ public class MovieDetailsFragment extends Fragment implements MoviesRecyclerAdap
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_movie_details, container, false);
         setViews(view);
+        mMovieId = getArguments().getLong(MOVIE_ID_ARG);
+        mPresenter.loadMovieDetails(mMovieId);
         return view;
     }
 
@@ -91,17 +100,10 @@ public class MovieDetailsFragment extends Fragment implements MoviesRecyclerAdap
 
     }
 
-    public void setMovieId(long movieId){
-        mMovieId = movieId;
-    }
-
 
     @Override
     public void onResume() {
         super.onResume();
-
-        mPresenter.loadMovieDetails(mMovieId);
-
     }
 
     private void refreshDisplay() {

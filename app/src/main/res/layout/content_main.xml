@@ -12,14 +12,12 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
-    <fragment
-        android:id="@+id/moviesFragment"
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.bartovapps.androidtest.movies.MoviesFeedFragment"
-        android:layout_centerInParent="true"
-        tools:layout="@layout/fragment_movies_feed">
+        android:layout_height="match_parent">
 
-    </fragment>
+    </FrameLayout>
+
 
 </RelativeLayout>

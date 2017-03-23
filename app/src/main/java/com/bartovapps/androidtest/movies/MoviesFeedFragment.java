@@ -45,42 +45,42 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MoviesFeedFragment extends Fragment implements  MoviesContract.View{
+public class MoviesFeedFragment extends Fragment implements MoviesContract.View {
 
     public static final String TAG = MoviesFeedFragment.class.getSimpleName();
     private static final int LOADER_ID = 1;
     RecyclerView rvMoviesFeed;
     SimpleCursorRecyclerAdapter moviesRecyclerAdapter;
-    List<Movie> movies = new ArrayList<>();
     FragmentEventListener mFragmentEventListener;
-    Cursor mCursor;
     LoaderManager loaderManager;
     int mHttpReqMethod = R.integer.HttpUrlConnection;
 
     SharedPreferences sharedPreferences;
-    Gson gson;
     MoviesContract.Presenter mPresenter;
 
-
-    public MoviesFeedFragment() {
+    public static MoviesFeedFragment newInstance() {
+        MoviesFeedFragment f = new MoviesFeedFragment();
+        return f;
     }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate");
         loaderManager = getLoaderManager();
-      //  loaderManager.initLoader(LOADER_ID, null, this);
+        setRetainInstance(true);
+        //  loaderManager.initLoader(LOADER_ID, null, this);
         //loaderManager.initLoader(LOADER_ID, null, MoviesFeedFragment.this);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
-        gson = new Gson();
         mPresenter = new MoviesPresenter(getActivity(), loaderManager, this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView");
+
         View view = inflater.inflate(R.layout.fragment_movies_feed, container, false);
         setupViews(view);
 
@@ -90,7 +90,7 @@ public class MoviesFeedFragment extends Fragment implements  MoviesContract.View
 
     private void setupViews(View view) {
         rvMoviesFeed = (RecyclerView) view.findViewById(R.id.rvMoviesFeed);
-        rvMoviesFeed.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(),rvMoviesFeed, new RecyclerItemClickListener.OnItemClickListener(){
+        rvMoviesFeed.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), rvMoviesFeed, new RecyclerItemClickListener.OnItemClickListener() {
 
             @Override
             public void onItemClick(View view, int position) {
@@ -112,25 +112,50 @@ public class MoviesFeedFragment extends Fragment implements  MoviesContract.View
 
         rvMoviesFeed.setLayoutManager(manager);
 //        rvImagesRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(MainActivity.this, rvImagesRecyclerView, new ClickListener() {
-        }
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        Uri uri = Utils.buildRestQueryString(ApiHelper.API_TOP_RATED);
-        Log.i(TAG, "onActivityCreated: api uri: " + uri.toString());
-        mPresenter.loadMovies(uri);
+        if (savedInstanceState == null) {
+            Uri uri = Utils.buildRestQueryString(ApiHelper.API_TOP_RATED);
+            Log.i(TAG, "onActivityCreated: api uri: " + uri.toString());
+            mPresenter.loadMovies(uri);
+        } else {
+            Log.i(TAG, "onActivityCreated: savedInstanceState not null");
+        }
     }
 
-    public void setFragmentEventListener(FragmentEventListener fragmentEventListener){
+    public void setFragmentEventListener(FragmentEventListener fragmentEventListener) {
         mFragmentEventListener = fragmentEventListener;
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i(TAG, "onStop");
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.i(TAG, "onDetach");
+    }
 
     private void refreshDisplay(Cursor cursor) {
-        Log.i(TAG, "About to refresh display with " + cursor.getCount() + " items");
+        Log.i(TAG, "About to refresh display with " + ((cursor == null) ? null : cursor.getCount()) + " items");
         moviesRecyclerAdapter.changeCursor(cursor);
     }
 
@@ -162,10 +187,9 @@ public class MoviesFeedFragment extends Fragment implements  MoviesContract.View
 
     }
 
-    public interface FragmentEventListener{
-       void onFragmentEvent(long movie_api_id);
+    public interface FragmentEventListener {
+        void onFragmentEvent(long movie_api_id);
     }
-
 
 
     @Override
@@ -174,7 +198,7 @@ public class MoviesFeedFragment extends Fragment implements  MoviesContract.View
         int itemId = item.getItemId();
         Uri uri;
 
-        switch (itemId){
+        switch (itemId) {
             case R.id.top_rated:
                 uri = Utils.buildRestQueryString(ApiHelper.API_TOP_RATED);
                 break;

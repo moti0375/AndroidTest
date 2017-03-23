@@ -21,13 +21,18 @@
             android:name=".movies_details.MovieDetailsActivity"
             android:parentActivityName=".MainActivity" />
 
+        <activity
+            android:name=".PrefsActivity"
+            android:parentActivityName=".MainActivity" />
+
+
         <provider
             android:name=".data.MoviesProvider"
             android:authorities="com.bartovapps.androidtest.data.moviesprovider"
             android:exported="false" />
 
 
-        <activity android:name=".PrefsActivity"></activity>
+
     </application>
 
 </manifest>

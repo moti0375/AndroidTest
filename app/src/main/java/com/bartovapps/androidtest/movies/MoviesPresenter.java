@@ -97,8 +97,10 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
         mCursor = null;
     }
 
+
+
     public void getDataWithVolley(Uri url) {
-        Log.i(TAG, "About the get data with Volley");
+        Log.i(TAG, "getDataWithVolley");
         RequestQueue queue = Volley.newRequestQueue(mContext);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url.toString(),

@@ -24,9 +24,11 @@ package com.bartovapps.androidtest.adpaters;/*
 
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 public abstract class CursorRecyclerAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
+    private static final String TAG = "CursorRecyclerAdapter";
     protected boolean mDataValid;
     protected Cursor mCursor;
     protected int mRowIDColumn;
@@ -113,11 +115,13 @@ public abstract class CursorRecyclerAdapter<VH extends RecyclerView.ViewHolder> 
         Cursor oldCursor = mCursor;
         mCursor = newCursor;
         if (newCursor != null) {
+            Log.i(TAG, "swapCursor - new Cursor is not null");
             mRowIDColumn = newCursor.getColumnIndexOrThrow("_id");
             mDataValid = true;
             // notify the observers about the new cursor
             notifyDataSetChanged();
         } else {
+            Log.i(TAG, "swapCursor - new Cursor is null");
             mRowIDColumn = -1;
             mDataValid = false;
             // notify the observers about the lack of a data set
