@@ -1,9 +1,9 @@
-package com.bartovapps.androidtest;
+package com.bartovapps.androidtest.api;
 
 /**
  * Created by BartovMoti on 01/24/17.
  */
-public class ApiManager {
+public class ApiHelper {
 
     public static final String TMDB_API_KEY = "b331218ddcbd128634135abf7673fab5";
     public static final String API_SCHEMA = "https";
@@ -19,8 +19,11 @@ public class ApiManager {
     public static final String TMDB_IMAGES_P = "p";
     public static final String TMDB_IMAGES_SIZE = "w300";
 
-    public static final String POPULAR_SEARCH = "popular";
-    public static final String TOP_RATED_SEARCH = "top_rated";
+    public static final String API_MOST_POPULAR = "popular";
+    public static final String API_TOP_RATED = "top_rated";
+    public static final String API_NOW_PLAYING = "now_playing";
+    public static final String API_UPCOMING = "upcoming";
+
 
 
 

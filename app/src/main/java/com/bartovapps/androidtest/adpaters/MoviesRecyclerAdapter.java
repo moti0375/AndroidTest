@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.bartovapps.androidtest.R;
 import com.bartovapps.androidtest.model.Movie;
-import com.bartovapps.androidtest.model.Video;
+import com.bartovapps.androidtest.model.Trailer;
 import com.bartovapps.androidtest.utils.Utils;
 import com.squareup.picasso.Picasso;
 
@@ -29,7 +29,7 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public static final int TYPE_ITEM = 1;
 
     LayoutInflater inflater;
-    List<Video> data = new ArrayList<>();
+    List<Trailer> data = new ArrayList<>();
     Movie movie;
     Activity context;
     MoviesRecyclerItemClickListener clickListener;
@@ -72,24 +72,24 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             ((HeaderViewHolder) holder).tvRating = (TextView) ((HeaderViewHolder) holder).itemView.findViewById(R.id.tvRating);
             ((HeaderViewHolder) holder).tvOverview = (TextView) ((HeaderViewHolder) holder).itemView.findViewById(R.id.tvOverview);
 
-            ((HeaderViewHolder) holder).tvTitle.setText(movie.getTitle());
-            Picasso.with(context).load(Utils.buildImageUri(movie.getImageUrl())).fit().centerCrop().into(((HeaderViewHolder) holder).ivHeaderImage);
-            ((HeaderViewHolder) holder).tvReleased.setText(movie.getRelease_date());
-            ((HeaderViewHolder) holder).tvDuration.setText(movie.getDuration() + "Min");
-            ((HeaderViewHolder) holder).tvRating.setText(movie.getRelease_date() + "/10");
-            ((HeaderViewHolder) holder).tvOverview.setText(movie.getOverview());
+            ((HeaderViewHolder) holder).tvTitle.setText(movie.title);
+            Picasso.with(context).load(Utils.buildImageUri(movie.poster_path)).fit().centerCrop().into(((HeaderViewHolder) holder).ivHeaderImage);
+            ((HeaderViewHolder) holder).tvReleased.setText(movie.release_date);
+            ((HeaderViewHolder) holder).tvDuration.setText(movie.runtime + "Min");
+            ((HeaderViewHolder) holder).tvRating.setText(movie.vote_average + "/10");
+            ((HeaderViewHolder) holder).tvOverview.setText(movie.overview);
 
 
             //cast holder to VHItem and set data
         } else if (holder instanceof ItemViewHolder) {
             Log.i(TAG, "onBindViewHolder instanceof ItemViewHolder");
             ((ItemViewHolder) holder).tvVideoTitle = (TextView) ((ItemViewHolder) holder).itemView.findViewById(R.id.tvVideoTitle);
-            ((ItemViewHolder) holder).tvVideoTitle.setText(data.get(position - 1).getTitle());
+            ((ItemViewHolder) holder).tvVideoTitle.setText(data.get(position - 1).name);
 
             ((ItemViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(context, "Video " + (position - 1) + "was clicked..", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Trailer " + (position - 1) + "was clicked..", Toast.LENGTH_SHORT).show();
                     clickListener.onItemClicked(data.get(position - 1));
                 }
             });
@@ -112,10 +112,10 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         int count = 0;
         if (movie == null) {
             count = 0;
-        }else{
-            if(data.isEmpty()){
+        } else {
+            if (data.isEmpty()) {
                 count = 1;
-            }else{
+            } else {
                 count = data.size() + 1;
             }
         }
@@ -157,29 +157,24 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
 
-    public void updateVideos(Movie movie, List<Video> data) {
+    public void updateVideos(Movie movie) {
         this.movie = movie;
-
         if (this.data != null) {
             this.data.clear();
         }
 
-        this.data.addAll(data);
-
-            Log.i(TAG, "data size: " + this.data.size());
-
-            context.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    notifyDataSetChanged();
-                }
-            });
-
-
+        this.data.addAll(this.movie.videos.results);
+        Log.i(TAG, "data size: " + this.data.size());
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
     }
 
     public interface MoviesRecyclerItemClickListener {
-        void onItemClicked(Video video);
+        void onItemClicked(Trailer trailer);
     }
 
 

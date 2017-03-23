@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="HttpUrlConnection">10</integer>
+    <integer name="Volley">20</integer>
+    <integer name="Retrofit">30</integer>
+    <integer name="OkHttp">40</integer>
+</resources>

@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/details_fragment"
-        class="com.bartovapps.androidtest.fragments.MovieDetailsFragment"
+        class="com.bartovapps.androidtest.movies_details.MovieDetailsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"

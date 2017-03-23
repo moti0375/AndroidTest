@@ -39,13 +39,13 @@ public class MoviesDataSource {
 
     public Movie insert(Movie movie) {
         ContentValues values = new ContentValues();
-        values.put(DbContract.MoviesEntry.COLUMN_TITLE, movie.getTitle());
-        values.put(DbContract.MoviesEntry.COLUMN_RELEASED, movie.getRelease_date());
-        values.put(DbContract.MoviesEntry.COLUMN_DURATION, movie.getDuration());
-        values.put(DbContract.MoviesEntry.COLUMN_OVERVIEW, movie.getOverview());
-        values.put(DbContract.MoviesEntry.COLUMN_RATING, movie.getRating());
+        values.put(DbContract.MoviesEntry.COLUMN_TITLE, movie.title);
+        values.put(DbContract.MoviesEntry.COLUMN_RELEASED, movie.release_date);
+        values.put(DbContract.MoviesEntry.COLUMN_RUNTIME, movie.runtime);
+        values.put(DbContract.MoviesEntry.COLUMN_OVERVIEW, movie.overview);
+        values.put(DbContract.MoviesEntry.COLUMN_RATING, movie.vote_average);
         long insertId = database.insert(DbContract.MoviesEntry.TABLE_NAME, null, values);
-        movie.setId(insertId);
+        movie.setSqlId(insertId);
         Log.i(TAG, "inserted:  " + movie.toString());
 
         return movie;
@@ -69,13 +69,13 @@ public class MoviesDataSource {
 
             while (cursor.moveToNext()) {
                 Movie movie = new Movie();
-             //   movie.setId(cursor.getLong(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_ID)));
-                movie.setTitle(cursor.getString(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_TITLE)));
-                movie.setRelease_date(cursor.getString(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_RELEASED)));
-                movie.setDuration(cursor.getLong(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_DURATION)));
-                movie.setOverview(cursor.getString(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_OVERVIEW)));
-                movie.setRating(cursor.getDouble(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_RATING)));
-                movie.setImageUrl(cursor.getString(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_IMAGE_URI)));
+             //   movie.setSqlId(cursor.getLong(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_ID)));
+                movie.title = (cursor.getString(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_TITLE)));
+                movie.release_date = (cursor.getString(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_RELEASED)));
+                movie.runtime = (cursor.getLong(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_RUNTIME)));
+                movie.overview = (cursor.getString(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_OVERVIEW)));
+                movie.vote_average = (cursor.getDouble(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_RATING)));
+                movie.poster_path = (cursor.getString(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_IMAGE_URI)));
 
                 movies.add(movie);
 
@@ -92,12 +92,12 @@ public class MoviesDataSource {
         ContentValues values = new ContentValues();
         for (Movie movie : movies) {
             values.clear();
-            values.put(DbContract.MoviesEntry.COLUMN_TITLE, movie.getTitle());
-            values.put(DbContract.MoviesEntry.COLUMN_RELEASED, movie.getRelease_date());
-            values.put(DbContract.MoviesEntry.COLUMN_DURATION, movie.getDuration());
-            values.put(DbContract.MoviesEntry.COLUMN_OVERVIEW, movie.getOverview());
-            values.put(DbContract.MoviesEntry.COLUMN_RATING, movie.getRating());
-            values.put(DbContract.MoviesEntry.COLUMN_IMAGE_URI, movie.getImageUrl());
+            values.put(DbContract.MoviesEntry.COLUMN_TITLE, movie.title);
+            values.put(DbContract.MoviesEntry.COLUMN_RELEASED, movie.release_date);
+            values.put(DbContract.MoviesEntry.COLUMN_RUNTIME, movie.runtime);
+            values.put(DbContract.MoviesEntry.COLUMN_OVERVIEW, movie.overview);
+            values.put(DbContract.MoviesEntry.COLUMN_RATING, movie.vote_average);
+            values.put(DbContract.MoviesEntry.COLUMN_IMAGE_URI, movie.poster_path);
             long insertId = database.insert(DbContract.MoviesEntry.TABLE_NAME, null, values);
         }
 

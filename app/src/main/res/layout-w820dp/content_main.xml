@@ -11,7 +11,7 @@
     <fragment
         android:id="@+id/moviesFragment"
         android:layout_width="0dp"
-        class="com.bartovapps.androidtest.fragments.MoviesFeedFragment"
+        class="com.bartovapps.androidtest.movies.MoviesFeedFragment"
         android:layout_height="match_parent"
         android:layout_weight="1"
         tools:layout="@layout/fragment_movies_feed"/>
@@ -22,7 +22,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            class="com.bartovapps.androidtest.fragments.MovieDetailsFragment"
+            class="com.bartovapps.androidtest.movies_details.MovieDetailsFragment"
             tools:layout="@layout/fragment_movie_details">
         </fragment>
 

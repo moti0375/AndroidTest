@@ -17,18 +17,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MovieDetailsActivity"
-            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".movies_details.MovieDetailsActivity"
+            android:parentActivityName=".MainActivity" />
 
         <provider
             android:name=".data.MoviesProvider"
             android:authorities="com.bartovapps.androidtest.data.moviesprovider"
             android:exported="false" />
 
-        <activity
-            android:name=".Main2Activity"
-            android:label="@string/title_activity_main2"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <activity android:name=".PrefsActivity"></activity>
     </application>
 
 </manifest>

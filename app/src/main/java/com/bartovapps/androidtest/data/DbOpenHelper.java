@@ -13,18 +13,18 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     private static final String LOG_TAG = DbOpenHelper.class.getSimpleName();
 
     //Constants for db name and version
-    private static final String DATABASE_NAME = "movies.db";
+    private static final String DATABASE_NAME = "results.db";
     private static final int DATABASE_VERSION = 1;
 
     //Constants for identifying table and columns
-    public static final String TABLE_MOVIES = "movies";
+    public static final String TABLE_MOVIES = "results";
     public static final String MOVIE_ID = "_id";
 
     public static final String[] ALL_COLUMNS = {DbContract.MoviesEntry._ID,
             DbContract.MoviesEntry.COLUMN_API_ID,
             DbContract.MoviesEntry.COLUMN_TITLE,
             DbContract.MoviesEntry.COLUMN_RELEASED,
-            DbContract.MoviesEntry.COLUMN_DURATION,
+            DbContract.MoviesEntry.COLUMN_RUNTIME,
             DbContract.MoviesEntry.COLUMN_OVERVIEW,
             DbContract.MoviesEntry.COLUMN_RATING,
             DbContract.MoviesEntry.COLUMN_IMAGE_URI};
@@ -36,7 +36,7 @@ public class DbOpenHelper extends SQLiteOpenHelper {
                     DbContract.MoviesEntry.COLUMN_API_ID + " NUMERIC, " +
                     DbContract.MoviesEntry.COLUMN_TITLE + " TEXT, " +
                     DbContract.MoviesEntry.COLUMN_RELEASED + " TEXT, " +
-                    DbContract.MoviesEntry.COLUMN_DURATION + " NUMERIC, " +
+                    DbContract.MoviesEntry.COLUMN_RUNTIME + " NUMERIC, " +
                     DbContract.MoviesEntry.COLUMN_OVERVIEW + " TEXT, " +
                     DbContract.MoviesEntry.COLUMN_RATING + " NUMERIC, " +
                     DbContract.MoviesEntry.COLUMN_IMAGE_URI + " TEXT " + ")";

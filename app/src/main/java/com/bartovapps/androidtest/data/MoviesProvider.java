@@ -14,7 +14,7 @@ import android.support.annotation.Nullable;
 public class MoviesProvider extends ContentProvider{
 
     public static final String AUTHORITY = "com.bartovapps.androidtest.data.moviesprovider";
-    public static final String BASE_PATH = "movies";
+    public static final String BASE_PATH = "results";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH);
 
     public static final int MOVIES = 1;

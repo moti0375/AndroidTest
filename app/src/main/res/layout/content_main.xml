@@ -16,7 +16,7 @@
         android:id="@+id/moviesFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="com.bartovapps.androidtest.fragments.MoviesFeedFragment"
+        class="com.bartovapps.androidtest.movies.MoviesFeedFragment"
         android:layout_centerInParent="true"
         tools:layout="@layout/fragment_movies_feed">
 

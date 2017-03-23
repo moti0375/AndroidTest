@@ -16,18 +16,26 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     public ApplicationTest() {
         super(Application.class);
 
-           Movie movie = new Movie(100, "Hagiga Basnooker", "Funny movie", "1975", 120, 9.5, null);
+        Movie movie = new Movie();
 
-            ContentValues values = new ContentValues();
-            values.put(DbContract.MoviesEntry.COLUMN_TITLE, movie.getTitle());
-            values.put(DbContract.MoviesEntry.COLUMN_OVERVIEW, movie.getOverview());
-            values.put(DbContract.MoviesEntry.COLUMN_RELEASED, movie.getRelease_date());
-            values.put(DbContract.MoviesEntry.COLUMN_DURATION, movie.getDuration());
-            values.put(DbContract.MoviesEntry.COLUMN_RATING, movie.getRating());
-            values.put(DbContract.MoviesEntry.COLUMN_IMAGE_URI, movie.getImageUrl());
+        movie.id = 100;
+        movie.title = "Hagiga Basnooker";
+        movie.overview = "Funny movie";
+        movie.release_date = "1975";
+        movie.runtime = 120;
+        movie.vote_average = 9.5;
 
-            Uri movieUri =  mContext.getContentResolver().insert(MoviesProvider.CONTENT_URI, values);
 
-            assertTrue(movieUri != null);
+        ContentValues values = new ContentValues();
+        values.put(DbContract.MoviesEntry.COLUMN_TITLE, movie.title);
+        values.put(DbContract.MoviesEntry.COLUMN_OVERVIEW, movie.overview);
+        values.put(DbContract.MoviesEntry.COLUMN_RELEASED, movie.release_date);
+        values.put(DbContract.MoviesEntry.COLUMN_RUNTIME, movie.runtime);
+        values.put(DbContract.MoviesEntry.COLUMN_RATING, movie.vote_average);
+        values.put(DbContract.MoviesEntry.COLUMN_IMAGE_URI, movie.poster_path);
+
+        Uri movieUri = mContext.getContentResolver().insert(MoviesProvider.CONTENT_URI, values);
+
+        assertTrue(movieUri != null);
     }
 }
