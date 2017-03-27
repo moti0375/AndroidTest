@@ -21,8 +21,17 @@ import com.bartovapps.androidtest.movies.MoviesPresenter;
 import com.bartovapps.androidtest.utils.Utils;
 import com.google.gson.Gson;
 
+import java.io.IOException;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func0;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by motibartov on 23/03/2017.
@@ -36,6 +45,7 @@ public class DetailsPresenter implements DetailsContract.Presenter {
     Movie mMovie;
     DetailsContract.View detailsView;
     int mApiClient;
+    Subscription subscription;
 
 
     public DetailsPresenter(Context context, DetailsContract.View view){
@@ -72,6 +82,27 @@ public class DetailsPresenter implements DetailsContract.Presenter {
             getDataWithVolley(Utils.buildMovieInfoQueryString(movie_api_id));
         }else if(mApiClient == mContext.getResources().getInteger(R.integer.Retrofit)){
             getDataWithRetrofit(movie_api_id);
+        }else if(mApiClient == mContext.getResources().getInteger(R.integer.OkHttp)){
+            subscription = getObservable(Utils.buildMovieInfoQueryString(movie_api_id))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<Movie>() {
+                        @Override
+                        public void onCompleted() {
+                            Log.i(TAG, "onCompleted");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.i(TAG, "onError");
+                        }
+
+                        @Override
+                        public void onNext(Movie movie) {
+                            mMovie = movie;
+                            detailsView.showMovieDetails(mMovie);
+                        }
+                    });
         }else{
             getDataWithVolley(Utils.buildMovieInfoQueryString(movie_api_id));
         }
@@ -124,4 +155,31 @@ public class DetailsPresenter implements DetailsContract.Presenter {
         });
     }
 
+    private Movie getMovieWithOkHttp(Uri uri) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        okhttp3.Request request = new okhttp3.Request.Builder().url(uri.toString()).build();
+        okhttp3.Response response = client.newCall(request).execute();
+        if (response.isSuccessful()) {
+            Movie movie = gson.fromJson(response.body().charStream(), Movie.class);
+            Log.i(TAG, "getMovieWithOkHttp: " + movie.toString() );
+            return movie;
+        }
+        return null;
+    }
+
+    public Observable<Movie> getObservable(final Uri uri) {
+        Log.i(TAG, "getObservable was called");
+        return Observable.defer(new Func0<Observable<Movie>>() {  //Returns no value..
+            @Override
+            public Observable<Movie> call() {
+
+                try {
+                    return Observable.just(getMovieWithOkHttp(uri));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        });
+    }
 }

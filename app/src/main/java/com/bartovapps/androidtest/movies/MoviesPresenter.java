@@ -29,10 +29,18 @@ import com.bartovapps.androidtest.model.SearchResponse;
 import com.bartovapps.androidtest.utils.Utils;
 import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func0;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by motibartov on 22/03/2017.
@@ -50,6 +58,9 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
     private int mClientApi;
     int retrofit;
     int volley;
+
+    Subscription subscription;
+
 
     public MoviesPresenter(Context context, LoaderManager loaderManager, MoviesContract.View movieView) {
         Log.i(TAG, "MoviesPresenter created..");
@@ -70,22 +81,49 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
 
     @Override
     public void unsubscribe() {
-
+        if(subscription != null & !subscription.isUnsubscribed()){
+            subscription.unsubscribe();
+        }
     }
 
     @Override
     public void loadMovies(String search, boolean forceUpdate) {
         mLoaderManager.restartLoader(LOADER_ID, null, MoviesPresenter.this);
 
-        if(forceUpdate){
+        if (forceUpdate) {
             Log.i(TAG, "loadMovies called, apiClient = " + mClientApi);
-            if(mClientApi == mContext.getResources().getInteger(R.integer.Retrofit)){
+            if (mClientApi == mContext.getResources().getInteger(R.integer.Retrofit)) {
                 Log.i(TAG, "loadMovies: Retrofit...");
                 getDataWithRetrofit(search);
-            }else if(mClientApi == mContext.getResources().getInteger(R.integer.Volley)){
+            } else if (mClientApi == mContext.getResources().getInteger(R.integer.Volley)) {
                 Log.i(TAG, "loadMovies: Volley...");
                 getDataWithVolley(search);
-            }else{
+            } else if (mClientApi == mContext.getResources().getInteger(R.integer.OkHttp)) {
+                Log.i(TAG, "loadMovies: OkHttp...");
+                subscription = getObservable(Utils.buildRestQueryString(search))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<SearchResponse>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+
+                            }
+
+                            @Override
+                            public void onNext(SearchResponse searchResponse) {
+                                mMovies = searchResponse.results;
+                                Log.i(TAG, "onNext called, got " + mMovies.size() + " movies");
+                                addMoviesToDb(mMovies);
+                                mLoaderManager.restartLoader(LOADER_ID, null, MoviesPresenter.this);
+                            }
+                        });
+                // getMoviesWithOkHttp(search);
+            } else {
                 Log.i(TAG, "loadMovies: Default...");
                 getDataWithVolley(search);
             }
@@ -139,31 +177,26 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
         RequestQueue queue = Volley.newRequestQueue(mContext);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, uri.toString(),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.i(TAG, "Volley onResponse: " + response);
+                response -> {
+                    Log.i(TAG, "Volley onResponse: " + response);
 
 //                        response = Utils.getJsonContentFromFlickerRespose(response);
-                        // Display the first 500 characters of the response string.
-                        //results = MoviesJsonParser.parseFeed(response);
-                        SearchResponse searchResponse = gson.fromJson(response, SearchResponse.class);
-                        Log.i(TAG, "Search Response: " + searchResponse.toString());
+                    // Display the first 500 characters of the response string.
+                    //results = MoviesJsonParser.parseFeed(response);
+                    SearchResponse searchResponse = gson.fromJson(response, SearchResponse.class);
+                    Log.i(TAG, "Search Response: " + searchResponse.toString());
 
-                        mMovies = searchResponse.results;
-                        Log.i(TAG, "Got " + mMovies.size() + " results: " + mMovies.toString());
+                    mMovies = searchResponse.results;
+                    Log.i(TAG, "Got " + mMovies.size() + " results: " + mMovies.toString());
 
-                        addMoviesToDb(mMovies);
-                        if (mLoaderManager == null) {
-                            Log.i(TAG, "Loader is null..");
-                        } else {
-                            mLoaderManager.restartLoader(LOADER_ID, null, MoviesPresenter.this);
-                        }
-
-                        //refreshDisplay();
+                    addMoviesToDb(mMovies);
+                    if (mLoaderManager == null) {
+                        Log.i(TAG, "Loader is null..");
+                    } else {
+                        mLoaderManager.restartLoader(LOADER_ID, null, MoviesPresenter.this);
                     }
 
-
+                    //refreshDisplay();
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -226,4 +259,28 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
 
     }
 
+    private SearchResponse getMoviesWithOkHttp(Uri uri) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        okhttp3.Request request = new okhttp3.Request.Builder().url(uri.toString()).build();
+        okhttp3.Response response = client.newCall(request).execute();
+        if (response.isSuccessful()) {
+            SearchResponse searchResponse = gson.fromJson(response.body().charStream(), SearchResponse.class);
+            Log.i(TAG, "getMoviesWithOkHttp: got " + mMovies.size() + " movies..");
+            return searchResponse;
+        }
+        return null;
+    }
+
+
+    public Observable<SearchResponse> getObservable(final Uri uri) {
+        Log.i(TAG, "getObservable was called");
+        return Observable.defer(() -> {
+            try {
+                return Observable.just(getMoviesWithOkHttp(uri));
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        });
+    }
 }

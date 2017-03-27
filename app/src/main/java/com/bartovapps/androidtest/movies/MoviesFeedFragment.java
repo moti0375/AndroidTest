@@ -162,6 +162,12 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
         Log.i(TAG, "onDetach");
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPresenter.unsubscribe();
+    }
+
     private void refreshDisplay(Cursor cursor) {
         Log.i(TAG, "About to refresh display with " + ((cursor == null) ? null : cursor.getCount()) + " items");
         moviesRecyclerAdapter.changeCursor(cursor);
@@ -239,6 +245,7 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
             mPresenter.setApiClient(mApiClient);
         }
     };
+
 
 
 }
