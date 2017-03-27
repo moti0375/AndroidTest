@@ -8,7 +8,7 @@
             android:entries="@array/download_options_entries"
             android:entryValues="@array/download_options_values"
             android:defaultValue="10"
-            android:key="request_method"
+            android:key="api_client"
             android:title="Http Request Type"/>
     </PreferenceCategory>
 </PreferenceScreen>

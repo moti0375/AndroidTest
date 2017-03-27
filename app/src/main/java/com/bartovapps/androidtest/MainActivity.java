@@ -26,7 +26,7 @@ import com.bartovapps.androidtest.movies_details.MovieDetailsActivity;
 import com.bartovapps.androidtest.movies_details.MovieDetailsFragment;
 import com.bartovapps.androidtest.movies.MoviesFeedFragment;
 
-public class MainActivity extends AppCompatActivity implements MoviesFeedFragment.FragmentEventListener {
+public class MainActivity extends AppCompatActivity implements MoviesFeedFragment.FragmentEventListener, MainActivityContract.View {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String MOVIES_FRAGMENT_TAG = "MoviesFragment";
@@ -35,25 +35,23 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
     public static final String INTENT_LONG_EXTRA = "movie_api_id";
     MovieDetailsFragment movieDetailsFragment;
     MoviesFeedFragment moviesFeedFragment;
-    FrameLayout mContainer;
     boolean mTablet;
-    ViewGroup viewGroup;
     ActionBarDrawerToggle mActionBarDrawerToggle;
     DrawerLayout mDrawerLayout;
     NavigationView mNavView;
 
-    FragmentManager fragmentManager;
+    FragmentManager mFragmentManager;
+    MainActivityContract.Presenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
-        fragmentManager = getSupportFragmentManager();
-        setViews();
-
+        mFragmentManager = getSupportFragmentManager();
         moviesFeedFragment = MoviesFeedFragment.newInstance();
-        moviesFeedFragment.setFragmentEventListener(this);
+        mPresenter = new MainPresenter(this, this);
+        setViews();
     }
 
     private void setViews() {
@@ -65,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
 
         Log.i(TAG, "Tablet = " + mTablet);
 
-        Log.i(TAG, "adding MoviesFragment");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -96,25 +93,31 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
                 Log.i(TAG, "onNavigationItemSelected");
 
                 int itemId = item.getItemId();
-                switch (itemId) {
-                    case R.id.settings:
-                        Log.i(TAG, "About to open settings Activity");
-                        Intent prefsIntent = new Intent(MainActivity.this, PrefsActivity.class);
-                        mDrawerLayout.closeDrawer(mNavView);
-                        startActivity(prefsIntent);
-                }
+                mPresenter.drawerSettingsItemClicked(itemId);
                 return true;
             }
         });
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(TAG, "onStop");
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(getSupportFragmentManager().findFragmentByTag(MOVIES_FRAGMENT_TAG) == null){
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
+        Log.i(TAG, "on Resume - adding MoviesFragment");
+        if (getSupportFragmentManager().findFragmentByTag(MOVIES_FRAGMENT_TAG) == null) {
+            FragmentTransaction transaction = mFragmentManager.beginTransaction();
             transaction.add(R.id.fragmentContainer, moviesFeedFragment, MOVIES_FRAGMENT_TAG).commit();
         }
     }
@@ -122,18 +125,16 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
 
     @Override
     public void onFragmentEvent(long movie_api_id) {
-
         movieDetailsFragment = MovieDetailsFragment.newInstance(movie_api_id);
 
+        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+
         if (mTablet) {
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.detailedContainer, movieDetailsFragment, DETAILED_FRAGMENT_TAG).commit();
         } else {
-
-            FragmentTransaction t = fragmentManager.beginTransaction();
-            t.add(R.id.fragmentContainer, movieDetailsFragment, DETAILED_FRAGMENT_TAG);
-            t.addToBackStack(null);
-            t.commit();
+            transaction.add(R.id.fragmentContainer, movieDetailsFragment, DETAILED_FRAGMENT_TAG);
+            transaction.addToBackStack(null);
+            transaction.commit();
         }
     }
 
@@ -164,4 +165,21 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
         }
     }
 
+    @Override
+    public void setPresenter(Object presenter) {
+
+    }
+
+    @Override
+    public void openSettings() {
+        Log.i(TAG, "About to open settings Activity");
+        Intent prefsIntent = new Intent(MainActivity.this, PrefsActivity.class);
+        mDrawerLayout.closeDrawer(mNavView);
+        startActivity(prefsIntent);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
 }

@@ -16,8 +16,12 @@ import com.bartovapps.androidtest.model.Trailer;
 import com.bartovapps.androidtest.utils.Utils;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by BartovMoti on 11/08/15.
@@ -33,10 +37,14 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     Movie movie;
     Activity context;
     MoviesRecyclerItemClickListener clickListener;
+    SimpleDateFormat apiDateFormat;
+    SimpleDateFormat appDateFormat;
 
     public MoviesRecyclerAdapter(Activity context) {
         inflater = LayoutInflater.from(context);
         this.context = context;
+        apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        appDateFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
     }
 
     public void setItemClickedListener(MoviesRecyclerItemClickListener clickListener) {
@@ -74,7 +82,14 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
             ((HeaderViewHolder) holder).tvTitle.setText(movie.title);
             Picasso.with(context).load(Utils.buildImageUri(movie.poster_path)).fit().centerCrop().into(((HeaderViewHolder) holder).ivHeaderImage);
-            ((HeaderViewHolder) holder).tvReleased.setText(movie.release_date);
+
+            try {
+                Date date = apiDateFormat.parse(movie.release_date);
+
+                ((HeaderViewHolder) holder).tvReleased.setText(appDateFormat.format(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             ((HeaderViewHolder) holder).tvDuration.setText(movie.runtime + "Min");
             ((HeaderViewHolder) holder).tvRating.setText(movie.vote_average + "/10");
             ((HeaderViewHolder) holder).tvOverview.setText(movie.overview);

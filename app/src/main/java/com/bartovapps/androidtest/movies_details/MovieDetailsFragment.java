@@ -2,10 +2,12 @@ package com.bartovapps.androidtest.movies_details;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,21 +17,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bartovapps.androidtest.R;
 import com.bartovapps.androidtest.adpaters.MoviesRecyclerAdapter;
 import com.bartovapps.androidtest.model.Movie;
 import com.bartovapps.androidtest.model.Trailer;
-import com.bartovapps.androidtest.movies.MoviesFeedFragment;
 import com.bartovapps.androidtest.utils.Utils;
 import com.google.gson.Gson;
 
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,12 +43,15 @@ public class MovieDetailsFragment extends Fragment implements MoviesRecyclerAdap
     Gson gson;
     DetailsContract.Presenter mPresenter;
     long mMovieId;
+    SharedPreferences sharedPreferences;
+    int mApiClient;
 
     public static MovieDetailsFragment newInstance(long movieId) {
         MovieDetailsFragment f = new MovieDetailsFragment();
         Bundle b = new Bundle();
         b.putLong(MOVIE_ID_ARG, movieId);
         f.setArguments(b);
+
         return f;
     }
 
@@ -64,8 +61,8 @@ public class MovieDetailsFragment extends Fragment implements MoviesRecyclerAdap
         super.onCreate(savedInstanceState);
         gson = new Gson();
         mPresenter = new DetailsPresenter(getActivity(), this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         // movie = getActivity().getContentResolver().query(CONTENT_URI, )
-
     }
 
     @Override
@@ -75,13 +72,16 @@ public class MovieDetailsFragment extends Fragment implements MoviesRecyclerAdap
         View view = inflater.inflate(R.layout.fragment_movie_details, container, false);
         setViews(view);
         mMovieId = getArguments().getLong(MOVIE_ID_ARG);
-        mPresenter.loadMovieDetails(mMovieId);
+        mApiClient = Integer.parseInt(sharedPreferences.getString("api_client", "" + getResources().getInteger(R.integer.Volley)));
+        mPresenter.setApiClient(mApiClient);
+        loadMovieDetail(mMovieId);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
     }
 
     private void setViews(View view) {
@@ -106,6 +106,9 @@ public class MovieDetailsFragment extends Fragment implements MoviesRecyclerAdap
         super.onResume();
     }
 
+    public void loadMovieDetail(long movieId){
+        mPresenter.loadMovieDetails(movieId);
+    }
     private void refreshDisplay() {
         if (mMovie != null) {
             moviesRecyclerAdapter.updateVideos(mMovie);

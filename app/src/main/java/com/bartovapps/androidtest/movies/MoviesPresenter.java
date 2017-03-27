@@ -3,6 +3,7 @@ package com.bartovapps.androidtest.movies;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,13 +18,21 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bartovapps.androidtest.R;
+import com.bartovapps.androidtest.api.ApiClient;
+import com.bartovapps.androidtest.api.ApiHelper;
+import com.bartovapps.androidtest.api.ApiInterface;
 import com.bartovapps.androidtest.data.DbContract;
 import com.bartovapps.androidtest.data.MoviesProvider;
 import com.bartovapps.androidtest.model.Movie;
 import com.bartovapps.androidtest.model.SearchResponse;
+import com.bartovapps.androidtest.utils.Utils;
 import com.google.gson.Gson;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 /**
  * Created by motibartov on 22/03/2017.
@@ -36,8 +45,11 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
     Context mContext;
     LoaderManager mLoaderManager;
     Gson gson;
-    List<Movie> movies;
+    List<Movie> mMovies;
     Cursor mCursor;
+    private int mClientApi;
+    int retrofit;
+    int volley;
 
     public MoviesPresenter(Context context, LoaderManager loaderManager, MoviesContract.View movieView) {
         Log.i(TAG, "MoviesPresenter created..");
@@ -47,6 +59,8 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
         mLoaderManager = loaderManager;
         mLoaderManager.initLoader(LOADER_ID, null, this);
         gson = new Gson();
+        retrofit = mContext.getResources().getInteger(R.integer.Retrofit);
+        volley = mContext.getResources().getInteger(R.integer.Volley);
     }
 
     @Override
@@ -60,20 +74,39 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
     }
 
     @Override
-    public void loadMovies(Uri uri) {
-        Log.i(TAG, "loadMovies called");
-        getDataWithVolley(uri);
+    public void loadMovies(String search, boolean forceUpdate) {
+        mLoaderManager.restartLoader(LOADER_ID, null, MoviesPresenter.this);
+
+        if(forceUpdate){
+            Log.i(TAG, "loadMovies called, apiClient = " + mClientApi);
+            if(mClientApi == mContext.getResources().getInteger(R.integer.Retrofit)){
+                Log.i(TAG, "loadMovies: Retrofit...");
+                getDataWithRetrofit(search);
+            }else if(mClientApi == mContext.getResources().getInteger(R.integer.Volley)){
+                Log.i(TAG, "loadMovies: Volley...");
+                getDataWithVolley(search);
+            }else{
+                Log.i(TAG, "loadMovies: Default...");
+                getDataWithVolley(search);
+            }
+        }
+
     }
 
     @Override
     public void movieItemClicked(int position) {
-        if(mCursor != null && mCursor.getCount() > 0){
+        if (mCursor != null && mCursor.getCount() > 0) {
             mCursor.moveToPosition(position);
 
             long movieId = mCursor.getLong(mCursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_API_ID));
             Log.i(TAG, "onItemClick: movie " + movieId + " was clicked");
             movieView.showMovieDetails(movieId);
         }
+    }
+
+    @Override
+    public void setApiClient(int client) {
+        mClientApi = client;
     }
 
     @Override
@@ -98,12 +131,14 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
     }
 
 
+    public void getDataWithVolley(String search) {
 
-    public void getDataWithVolley(Uri url) {
-        Log.i(TAG, "getDataWithVolley");
+        Uri uri = Utils.buildRestQueryString(search);
+        Log.i(TAG, "getDataWithVolley, req uri: " + uri.toString());
+
         RequestQueue queue = Volley.newRequestQueue(mContext);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url.toString(),
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, uri.toString(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -115,10 +150,10 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
                         SearchResponse searchResponse = gson.fromJson(response, SearchResponse.class);
                         Log.i(TAG, "Search Response: " + searchResponse.toString());
 
-                        movies = searchResponse.results;
-                        Log.i(TAG, "Got " + movies.size() + " results: " + movies.toString());
+                        mMovies = searchResponse.results;
+                        Log.i(TAG, "Got " + mMovies.size() + " results: " + mMovies.toString());
 
-                        addMoviesToDb(movies);
+                        addMoviesToDb(mMovies);
                         if (mLoaderManager == null) {
                             Log.i(TAG, "Loader is null..");
                         } else {
@@ -137,6 +172,35 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
         });
 // Add the request to the RequestQueue.
         queue.add(stringRequest);
+    }
+
+    private void getDataWithRetrofit(String search) {
+        Log.i(TAG, "getDataWithRetrofit called");
+        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+        Call<SearchResponse> call = apiService.searchMovies(search, ApiHelper.TMDB_API_KEY);
+        Log.i(TAG, "call url: " + call.request().url());
+
+        call.enqueue(new Callback<SearchResponse>() {
+            @Override
+            public void onResponse(Call<SearchResponse> call, retrofit2.Response<SearchResponse> response) {
+                SearchResponse searchResponse = response.body();
+                mMovies = searchResponse.results;
+                Log.i(TAG, "Retrofit onResponse: got " + mMovies.size() + " movies");
+                addMoviesToDb(mMovies);
+                if (mLoaderManager == null) {
+                    Log.i(TAG, "Loader is null..");
+                } else {
+                    mLoaderManager.restartLoader(LOADER_ID, null, MoviesPresenter.this);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SearchResponse> call, Throwable t) {
+                Log.e(TAG, "Retrofit onFailure: " + t.getMessage());
+            }
+        });
+
+
     }
 
     private void addMoviesToDb(List<Movie> movies) {
@@ -161,4 +225,5 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
         }
 
     }
+
 }

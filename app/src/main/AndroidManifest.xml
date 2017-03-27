@@ -3,6 +3,7 @@
     package="com.bartovapps.androidtest">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -30,9 +31,6 @@
             android:name=".data.MoviesProvider"
             android:authorities="com.bartovapps.androidtest.data.moviesprovider"
             android:exported="false" />
-
-
-
     </application>
 
 </manifest>

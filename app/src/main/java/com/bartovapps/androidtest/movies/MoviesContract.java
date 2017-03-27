@@ -24,9 +24,8 @@ public interface MoviesContract {
 
     interface Presenter extends BasePresenter{
 
-        void loadMovies(Uri uri);
+        void loadMovies(String search, boolean forceUpdate);
         void movieItemClicked(int position);
-
     }
 
 }

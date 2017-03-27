@@ -2,6 +2,7 @@ package com.bartovapps.androidtest.movies;
 
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -53,7 +54,7 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
     SimpleCursorRecyclerAdapter moviesRecyclerAdapter;
     FragmentEventListener mFragmentEventListener;
     LoaderManager loaderManager;
-    int mHttpReqMethod = R.integer.HttpUrlConnection;
+    int mApiClient;
 
     SharedPreferences sharedPreferences;
     MoviesContract.Presenter mPresenter;
@@ -73,6 +74,8 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
         //loaderManager.initLoader(LOADER_ID, null, MoviesFeedFragment.this);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
+
+
         mPresenter = new MoviesPresenter(getActivity(), loaderManager, this);
     }
 
@@ -85,6 +88,7 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
         setupViews(view);
 
         setHasOptionsMenu(true);
+
         return view;
     }
 
@@ -117,17 +121,21 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mApiClient = Integer.parseInt(sharedPreferences.getString("api_client", "" + getResources().getInteger(R.integer.Volley)));
+        mPresenter.setApiClient(mApiClient);
+
         if (savedInstanceState == null) {
-            Uri uri = Utils.buildRestQueryString(ApiHelper.API_TOP_RATED);
-            Log.i(TAG, "onActivityCreated: api uri: " + uri.toString());
-            mPresenter.loadMovies(uri);
+            mPresenter.loadMovies(ApiHelper.API_TOP_RATED, true);
         } else {
             Log.i(TAG, "onActivityCreated: savedInstanceState not null");
+            mPresenter.loadMovies(ApiHelper.API_TOP_RATED, false);
         }
     }
 
-    public void setFragmentEventListener(FragmentEventListener fragmentEventListener) {
-        mFragmentEventListener = fragmentEventListener;
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mFragmentEventListener = (FragmentEventListener) context;
     }
 
     @Override
@@ -183,6 +191,7 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
 
     @Override
     public void showMovieDetails(long movieId) {
+        Log.i(TAG, "showMovieDetails called..");
         mFragmentEventListener.onFragmentEvent(movieId);
 
     }
@@ -196,28 +205,28 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.i(TAG, "onOptionsItemSelected called");
         int itemId = item.getItemId();
-        Uri uri;
+        String search;
 
         switch (itemId) {
             case R.id.top_rated:
-                uri = Utils.buildRestQueryString(ApiHelper.API_TOP_RATED);
+                search = ApiHelper.API_TOP_RATED;
                 break;
             case R.id.most_popular:
-                uri = Utils.buildRestQueryString(ApiHelper.API_MOST_POPULAR);
+                search = ApiHelper.API_MOST_POPULAR;
                 break;
             case R.id.now_playing:
-                uri = Utils.buildRestQueryString(ApiHelper.API_NOW_PLAYING);
+                search = ApiHelper.API_NOW_PLAYING;
                 break;
             case R.id.upcoming:
-                uri = Utils.buildRestQueryString(ApiHelper.API_UPCOMING);
+                search = ApiHelper.API_UPCOMING;
                 break;
             default:
-                uri = Utils.buildRestQueryString(ApiHelper.API_UPCOMING);
+                search = ApiHelper.API_UPCOMING;
                 break;
 
         }
 
-        mPresenter.loadMovies(uri);
+        mPresenter.loadMovies(search, true);
 
         return true;
     }
@@ -225,8 +234,9 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
     SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            mHttpReqMethod = Integer.parseInt(sharedPreferences.getString(key, "10"));
-            Log.i(TAG, "onSharedPreferenceChanged called, changed key: " + key + ", value = " + mHttpReqMethod);
+            mApiClient = Integer.parseInt(sharedPreferences.getString(key, "10"));
+            Log.i(TAG, "onSharedPreferenceChanged called, changed key: " + key + ", value = " + mApiClient);
+            mPresenter.setApiClient(mApiClient);
         }
     };
 

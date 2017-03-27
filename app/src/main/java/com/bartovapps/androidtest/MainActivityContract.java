@@ -11,7 +11,7 @@ public interface MainActivityContract {
     }
 
     interface Presenter extends BasePresenter{
-        void drawerSettingsItemClicked();
+        void drawerSettingsItemClicked(int itemId);
     }
 
 }
