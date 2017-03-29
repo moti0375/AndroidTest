@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -17,12 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.ListView;
 
-import com.bartovapps.androidtest.movies_details.MovieDetailsActivity;
 import com.bartovapps.androidtest.movies_details.MovieDetailsFragment;
 import com.bartovapps.androidtest.movies.MoviesFeedFragment;
 
@@ -55,11 +49,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
     }
 
     private void setViews() {
-        if (findViewById(R.id.llWideScreen) != null) {
-            mTablet = true;
-        } else {
-            mTablet = false;
-        }
+        mTablet = findViewById(R.id.llWideScreen) != null;
 
         Log.i(TAG, "Tablet = " + mTablet);
 
@@ -87,15 +77,12 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
         getSupportActionBar().setHomeButtonEnabled(true);
 
         mNavView = (NavigationView) findViewById(R.id.nvView);
-        mNavView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Log.i(TAG, "onNavigationItemSelected");
+        mNavView.setNavigationItemSelectedListener(item -> {
+            Log.i(TAG, "onNavigationItemSelected");
 
-                int itemId = item.getItemId();
-                mPresenter.drawerSettingsItemClicked(itemId);
-                return true;
-            }
+            int itemId = item.getItemId();
+            mPresenter.drawerSettingsItemClicked(itemId);
+            return true;
         });
 
     }
@@ -152,6 +139,23 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
         if (mActionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+
+        int itemId = item.getItemId();
+        switch (itemId){
+            case R.id.top_rated:
+//                getSupportActionBar().setTitle(getString(R.string.top_rated));
+                break;
+            case R.id.most_popular:
+//                getSupportActionBar().setTitle(getString(R.string.most_popular));
+                break;
+            case R.id.now_playing:
+//                getSupportActionBar().setTitle(getString(R.string.now_playing));
+                break;
+            case R.id.upcoming:
+//                getSupportActionBar().setTitle(getString(R.string.upcoming));
+                break;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

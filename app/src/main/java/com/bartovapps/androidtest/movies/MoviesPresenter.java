@@ -1,9 +1,8 @@
 package com.bartovapps.androidtest.movies;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,7 +38,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 
 /**
@@ -49,17 +47,17 @@ import rx.schedulers.Schedulers;
 public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = "MoviesPresenter";
     private static final int LOADER_ID = 100;
-    MoviesContract.View movieView;
-    Context mContext;
-    LoaderManager mLoaderManager;
-    Gson gson;
-    List<Movie> mMovies;
-    Cursor mCursor;
+    private MoviesContract.View movieView;
+    private Context mContext;
+    private LoaderManager mLoaderManager;
+    private Gson gson;
+    private List<Movie> mMovies;
+    private Cursor mCursor;
     private int mClientApi;
-    int retrofit;
-    int volley;
+    private int retrofit;
+    private int volley;
 
-    Subscription subscription;
+    private Subscription subscription;
 
 
     public MoviesPresenter(Context context, LoaderManager loaderManager, MoviesContract.View movieView) {
@@ -81,7 +79,7 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
 
     @Override
     public void unsubscribe() {
-        if(subscription != null & !subscription.isUnsubscribed()){
+        if(subscription != null && !subscription.isUnsubscribed()){
             subscription.unsubscribe();
         }
     }
@@ -169,7 +167,7 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
     }
 
 
-    public void getDataWithVolley(String search) {
+    private void getDataWithVolley(String search) {
 
         Uri uri = Utils.buildRestQueryString(search);
         Log.i(TAG, "getDataWithVolley, req uri: " + uri.toString());
@@ -197,12 +195,7 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
                     }
 
                     //refreshDisplay();
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.i(TAG, "Volley onErrorResponse: " + error);
-            }
-        });
+                }, error -> Log.i(TAG, "Volley onErrorResponse: " + error));
 // Add the request to the RequestQueue.
         queue.add(stringRequest);
     }
@@ -272,7 +265,7 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
     }
 
 
-    public Observable<SearchResponse> getObservable(final Uri uri) {
+    private Observable<SearchResponse> getObservable(final Uri uri) {
         Log.i(TAG, "getObservable was called");
         return Observable.defer(() -> {
             try {

@@ -1,17 +1,13 @@
 package com.bartovapps.androidtest.movies;
 
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,26 +18,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bartovapps.androidtest.api.ApiHelper;
 import com.bartovapps.androidtest.R;
 import com.bartovapps.androidtest.adpaters.RecyclerItemClickListener;
 import com.bartovapps.androidtest.adpaters.SimpleCursorRecyclerAdapter;
-import com.bartovapps.androidtest.data.DbContract;
-import com.bartovapps.androidtest.data.DbOpenHelper;
-import com.bartovapps.androidtest.data.MoviesProvider;
-import com.bartovapps.androidtest.model.Movie;
-import com.bartovapps.androidtest.model.SearchResponse;
-import com.bartovapps.androidtest.utils.Utils;
-import com.google.gson.Gson;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,13 +35,13 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
     FragmentEventListener mFragmentEventListener;
     LoaderManager loaderManager;
     int mApiClient;
+    String mSearch = ApiHelper.API_TOP_RATED;
 
     SharedPreferences sharedPreferences;
     MoviesContract.Presenter mPresenter;
 
     public static MoviesFeedFragment newInstance() {
-        MoviesFeedFragment f = new MoviesFeedFragment();
-        return f;
+        return new MoviesFeedFragment();
     }
 
     @Override
@@ -75,9 +55,11 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         sharedPreferences.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
 
-
+        readPreferences();
         mPresenter = new MoviesPresenter(getActivity(), loaderManager, this);
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -125,10 +107,10 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
         mPresenter.setApiClient(mApiClient);
 
         if (savedInstanceState == null) {
-            mPresenter.loadMovies(ApiHelper.API_TOP_RATED, true);
+            mPresenter.loadMovies(mSearch, true);
         } else {
             Log.i(TAG, "onActivityCreated: savedInstanceState not null");
-            mPresenter.loadMovies(ApiHelper.API_TOP_RATED, false);
+            mPresenter.loadMovies(mSearch, false);
         }
     }
 
@@ -211,28 +193,29 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.i(TAG, "onOptionsItemSelected called");
         int itemId = item.getItemId();
-        String search;
 
         switch (itemId) {
             case R.id.top_rated:
-                search = ApiHelper.API_TOP_RATED;
+                mSearch = ApiHelper.API_TOP_RATED;
                 break;
             case R.id.most_popular:
-                search = ApiHelper.API_MOST_POPULAR;
+                mSearch = ApiHelper.API_MOST_POPULAR;
                 break;
             case R.id.now_playing:
-                search = ApiHelper.API_NOW_PLAYING;
+                mSearch = ApiHelper.API_NOW_PLAYING;
                 break;
             case R.id.upcoming:
-                search = ApiHelper.API_UPCOMING;
+                mSearch = ApiHelper.API_UPCOMING;
                 break;
             default:
-                search = ApiHelper.API_UPCOMING;
+                mSearch = ApiHelper.API_TOP_RATED;
                 break;
 
         }
 
-        mPresenter.loadMovies(search, true);
+        saveSearchToPreferences(mSearch);
+        getActivity().setTitle(mSearch.toUpperCase().replace("_", " "));
+        mPresenter.loadMovies(mSearch, true);
 
         return true;
     }
@@ -240,12 +223,22 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
     SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            mApiClient = Integer.parseInt(sharedPreferences.getString(key, "10"));
-            Log.i(TAG, "onSharedPreferenceChanged called, changed key: " + key + ", value = " + mApiClient);
-            mPresenter.setApiClient(mApiClient);
+            if(key.equals(getResources().getString(R.string.api_pref_key))){
+                mApiClient = Integer.parseInt(sharedPreferences.getString(key, "10"));
+                Log.i(TAG, "onSharedPreferenceChanged called, changed key: " + key + ", value = " + mApiClient);
+                mPresenter.setApiClient(mApiClient);
+            }
         }
     };
 
+    private void readPreferences() {
+        mSearch = sharedPreferences.getString("search", ApiHelper.API_TOP_RATED).toUpperCase().replace("_"," ");
+        getActivity().setTitle(mSearch);
+    }
+    private void saveSearchToPreferences(String search){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("search", search).commit();
+    }
 
 
 }

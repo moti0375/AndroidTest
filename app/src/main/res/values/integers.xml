@@ -4,4 +4,9 @@
     <integer name="Volley">20</integer>
     <integer name="Retrofit">30</integer>
     <integer name="OkHttp">40</integer>
+
+    <integer name="most_popular">100</integer>
+    <integer name="top_rated">200</integer>
+    <integer name="now_playing">300</integer>
+    <integer name="upcoming">400</integer>
 </resources>

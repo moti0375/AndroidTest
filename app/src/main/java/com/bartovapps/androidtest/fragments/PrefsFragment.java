@@ -1,8 +1,6 @@
 package com.bartovapps.androidtest.fragments;
 
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
-import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceFragmentCompat;
 
 import com.bartovapps.androidtest.R;

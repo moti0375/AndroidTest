@@ -57,7 +57,8 @@ public class Utils {
 
         builder.scheme(YouTubeApiHelper.API_SCHEMA)
                 .authority(YouTubeApiHelper.YOU_TUBE_BASE_URL)
-                .appendQueryParameter(YouTubeApiHelper.YOUTUBE_VIDEO, key);
+                .appendPath(YouTubeApiHelper.YOU_TUBE_WATCH_PATH)
+                .appendQueryParameter(YouTubeApiHelper.YOUTUBE_VIDEO_PARAM, key);
 
         return builder.build();
     }

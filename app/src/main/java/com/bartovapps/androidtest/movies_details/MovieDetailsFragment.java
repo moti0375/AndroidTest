@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bartovapps.androidtest.R;
-import com.bartovapps.androidtest.adpaters.MoviesRecyclerAdapter;
+import com.bartovapps.androidtest.adpaters.MovieDetailsRecyclerAdapter;
 import com.bartovapps.androidtest.model.Movie;
 import com.bartovapps.androidtest.model.Trailer;
 import com.bartovapps.androidtest.utils.Utils;
@@ -28,7 +28,7 @@ import com.google.gson.Gson;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MovieDetailsFragment extends Fragment implements MoviesRecyclerAdapter.MoviesRecyclerItemClickListener, DetailsContract.View {
+public class MovieDetailsFragment extends Fragment implements MovieDetailsRecyclerAdapter.MoviesRecyclerItemClickListener, DetailsContract.View {
 
     public static final String TAG = MovieDetailsFragment.class.getSimpleName();
     public static final String MOVIE_ID_ARG = "movieId";
@@ -37,7 +37,7 @@ public class MovieDetailsFragment extends Fragment implements MoviesRecyclerAdap
     TextView tvOverview;
     TextView tvRating;
     TextView tvDuration;
-    MoviesRecyclerAdapter moviesRecyclerAdapter;
+    MovieDetailsRecyclerAdapter movieDetailsRecyclerAdapter;
     RecyclerView recyclerView;
     Movie mMovie;
     Gson gson;
@@ -91,12 +91,12 @@ public class MovieDetailsFragment extends Fragment implements MoviesRecyclerAdap
         tvRating = (TextView) view.findViewById(R.id.tvRating);
         tvDuration = (TextView) view.findViewById(R.id.tvDuration);
 
-        moviesRecyclerAdapter = new MoviesRecyclerAdapter(getActivity());
-        moviesRecyclerAdapter.setItemClickedListener(this);
+        movieDetailsRecyclerAdapter = new MovieDetailsRecyclerAdapter(getActivity());
+        movieDetailsRecyclerAdapter.setItemClickedListener(this);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rvMovieDetails);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(moviesRecyclerAdapter);
+        recyclerView.setAdapter(movieDetailsRecyclerAdapter);
 
     }
 
@@ -111,12 +111,13 @@ public class MovieDetailsFragment extends Fragment implements MoviesRecyclerAdap
     }
     private void refreshDisplay() {
         if (mMovie != null) {
-            moviesRecyclerAdapter.updateVideos(mMovie);
+            movieDetailsRecyclerAdapter.updateVideos(mMovie);
         }
     }
 
     @Override
     public void onItemClicked(Trailer trailer) {
+        Log.i(TAG, "onItemClicked");
         mPresenter.onTrailerItemClicked(trailer);
     }
 
@@ -127,7 +128,9 @@ public class MovieDetailsFragment extends Fragment implements MoviesRecyclerAdap
 
     @Override
     public void playTrailer(Trailer trailer) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Utils.buildYouTubeUri(trailer.key)));
+        Uri uri = Utils.buildYouTubeUri(trailer.key);
+        Log.i(TAG, "YouTube URI: " + uri.toString());
+        startActivity(new Intent(Intent.ACTION_VIEW, uri));
     }
 
     @Override

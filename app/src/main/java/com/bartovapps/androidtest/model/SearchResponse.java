@@ -1,6 +1,5 @@
 package com.bartovapps.androidtest.model;
 
-import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 

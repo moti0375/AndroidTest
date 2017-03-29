@@ -37,15 +37,15 @@ import rx.schedulers.Schedulers;
  * Created by motibartov on 23/03/2017.
  */
 
-public class DetailsPresenter implements DetailsContract.Presenter {
+class DetailsPresenter implements DetailsContract.Presenter {
     private static final String TAG = "DetailsPresenter";
 
-    Context mContext;
-    Gson gson;
-    Movie mMovie;
-    DetailsContract.View detailsView;
-    int mApiClient;
-    Subscription subscription;
+    private Context mContext;
+    private Gson gson;
+    private Movie mMovie;
+    private DetailsContract.View detailsView;
+    private int mApiClient;
+    private Subscription subscription;
 
 
     public DetailsPresenter(Context context, DetailsContract.View view){
@@ -62,7 +62,9 @@ public class DetailsPresenter implements DetailsContract.Presenter {
 
     @Override
     public void unsubscribe() {
-
+        if(subscription != null && !subscription.isUnsubscribed()){
+            subscription.isUnsubscribed();
+        }
     }
 
     @Override
@@ -72,7 +74,7 @@ public class DetailsPresenter implements DetailsContract.Presenter {
 
     @Override
     public void onTrailerItemClicked(Trailer trailer) {
-
+        detailsView.playTrailer(trailer);
     }
 
     @Override
@@ -110,26 +112,18 @@ public class DetailsPresenter implements DetailsContract.Presenter {
     }
 
 
-    public void getDataWithVolley(Uri url) {
+    private void getDataWithVolley(Uri url) {
         Log.i(TAG, "getDataWithVolley, Uri: " + url.toString());
         RequestQueue queue = Volley.newRequestQueue(mContext);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url.toString(),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.i(TAG, "Volley onResponse: " + response);
+                response -> {
+                    Log.i(TAG, "Volley onResponse: " + response);
 
-                        mMovie = gson.fromJson(response, Movie.class);
-                        Log.i(TAG, "Trailer Search Response: " + mMovie.toString());
-                        detailsView.showMovieDetails(mMovie);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.i(TAG, "Volley onErrorResponse: " + error);
-            }
-        });
+                    mMovie = gson.fromJson(response, Movie.class);
+                    Log.i(TAG, "Trailer Search Response: " + mMovie.toString());
+                    detailsView.showMovieDetails(mMovie);
+                }, error -> Log.i(TAG, "Volley onErrorResponse: " + error));
 // Add the request to the RequestQueue.
         queue.add(stringRequest);
     }
@@ -167,18 +161,15 @@ public class DetailsPresenter implements DetailsContract.Presenter {
         return null;
     }
 
-    public Observable<Movie> getObservable(final Uri uri) {
+    private Observable<Movie> getObservable(final Uri uri) {
         Log.i(TAG, "getObservable was called");
-        return Observable.defer(new Func0<Observable<Movie>>() {  //Returns no value..
-            @Override
-            public Observable<Movie> call() {
+        return Observable.defer(() -> {
 
-                try {
-                    return Observable.just(getMovieWithOkHttp(uri));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
-                }
+            try {
+                return Observable.just(getMovieWithOkHttp(uri));
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
             }
         });
     }

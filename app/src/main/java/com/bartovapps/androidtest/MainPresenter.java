@@ -1,16 +1,15 @@
 package com.bartovapps.androidtest;
 
-import android.app.Activity;
 import android.content.Context;
 
 /**
  * Created by motibartov on 23/03/2017.
  */
 
-public class MainPresenter implements MainActivityContract.Presenter {
+class MainPresenter implements MainActivityContract.Presenter {
 
-    Context mContext;
-    MainActivityContract.View mView;
+    private Context mContext;
+    private MainActivityContract.View mView;
 
     public MainPresenter(Context context, MainActivityContract.View view) {
         mContext = context;

@@ -14,6 +14,7 @@ import com.bartovapps.androidtest.R;
 import com.bartovapps.androidtest.model.Movie;
 import com.bartovapps.androidtest.model.Trailer;
 import com.bartovapps.androidtest.utils.Utils;
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -26,21 +27,21 @@ import java.util.Locale;
 /**
  * Created by BartovMoti on 11/08/15.
  */
-public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class MovieDetailsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = MoviesRecyclerAdapter.class.getSimpleName();
-    public static final int TYPE_HEADER = 0;
-    public static final int TYPE_ITEM = 1;
+    private static final String TAG = MovieDetailsRecyclerAdapter.class.getSimpleName();
+    private static final int TYPE_HEADER = 0;
+    private static final int TYPE_ITEM = 1;
 
-    LayoutInflater inflater;
-    List<Trailer> data = new ArrayList<>();
-    Movie movie;
-    Activity context;
-    MoviesRecyclerItemClickListener clickListener;
-    SimpleDateFormat apiDateFormat;
-    SimpleDateFormat appDateFormat;
+    private LayoutInflater inflater;
+    private List<Trailer> data = new ArrayList<>();
+    private Movie movie;
+    private Activity context;
+    private MoviesRecyclerItemClickListener clickListener;
+    private SimpleDateFormat apiDateFormat;
+    private SimpleDateFormat appDateFormat;
 
-    public MoviesRecyclerAdapter(Activity context) {
+    public MovieDetailsRecyclerAdapter(Activity context) {
         inflater = LayoutInflater.from(context);
         this.context = context;
         apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -58,12 +59,10 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         switch (viewType) {
             case TYPE_HEADER:
                 View headerView = inflater.inflate(R.layout.header_list_item, parent, false);
-                HeaderViewHolder headerViewHolder = new HeaderViewHolder(headerView);
-                return headerViewHolder;
+                return new HeaderViewHolder(headerView);
             case TYPE_ITEM:
                 View itemView = inflater.inflate(R.layout.video_list_item, parent, false);
-                ItemViewHolder itemViewHolder = new ItemViewHolder(itemView);
-                return itemViewHolder;
+                return new ItemViewHolder(itemView);
         }
         throw new RuntimeException("there is no type that matches the type " + viewType + " + make sure your using types correctly");
     }
@@ -81,7 +80,8 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             ((HeaderViewHolder) holder).tvOverview = (TextView) ((HeaderViewHolder) holder).itemView.findViewById(R.id.tvOverview);
 
             ((HeaderViewHolder) holder).tvTitle.setText(movie.title);
-            Picasso.with(context).load(Utils.buildImageUri(movie.poster_path)).fit().centerCrop().into(((HeaderViewHolder) holder).ivHeaderImage);
+           // Picasso.with(context).load(Utils.buildImageUri(movie.poster_path)).fit().centerCrop().into(((HeaderViewHolder) holder).ivHeaderImage);
+            Glide.with(context).load(Utils.buildImageUri(movie.poster_path)).fitCenter().centerCrop().into(((HeaderViewHolder) holder).ivHeaderImage);
 
             try {
                 Date date = apiDateFormat.parse(movie.release_date);
@@ -101,12 +101,9 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             ((ItemViewHolder) holder).tvVideoTitle = (TextView) ((ItemViewHolder) holder).itemView.findViewById(R.id.tvVideoTitle);
             ((ItemViewHolder) holder).tvVideoTitle.setText(data.get(position - 1).name);
 
-            ((ItemViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(context, "Trailer " + (position - 1) + "was clicked..", Toast.LENGTH_SHORT).show();
-                    clickListener.onItemClicked(data.get(position - 1));
-                }
+            ((ItemViewHolder) holder).itemView.setOnClickListener(view -> {
+                Toast.makeText(context, "Trailer " + (position - 1) + "was clicked..", Toast.LENGTH_SHORT).show();
+                clickListener.onItemClicked(data.get(position - 1));
             });
 
             //cast holder to VHHeader and set data for header.
@@ -124,7 +121,7 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     @Override
     public int getItemCount() {
-        int count = 0;
+        int count;
         if (movie == null) {
             count = 0;
         } else {
@@ -142,13 +139,13 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     class HeaderViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView tvTitle;
-        public ImageView ivHeaderImage;
-        public TextView tvReleased;
-        public TextView tvDuration;
-        public TextView tvRating;
-        public TextView tvOverview;
-        public View itemView;
+        private TextView tvTitle;
+        private ImageView ivHeaderImage;
+        private TextView tvReleased;
+        private TextView tvDuration;
+        private TextView tvRating;
+        private TextView tvOverview;
+        private View itemView;
 
         public HeaderViewHolder(View itemView) {
             super(itemView);
@@ -158,12 +155,12 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     }
 
-    class ItemViewHolder extends RecyclerView.ViewHolder {
+    private class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView tvVideoTitle;
-        public View itemView;
+        private TextView tvVideoTitle;
+        private View itemView;
 
-        public ItemViewHolder(View itemView) {
+        private ItemViewHolder(View itemView) {
             super(itemView);
             //drawerRowIcon.setOnClickListener(this);
             this.itemView = itemView;
@@ -180,12 +177,7 @@ public class MoviesRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         this.data.addAll(this.movie.videos.results);
         Log.i(TAG, "data size: " + this.data.size());
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                notifyDataSetChanged();
-            }
-        });
+        context.runOnUiThread(() -> notifyDataSetChanged());
     }
 
     public interface MoviesRecyclerItemClickListener {

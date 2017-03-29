@@ -38,6 +38,7 @@ import com.bartovapps.androidtest.R;
 import com.bartovapps.androidtest.adpaters.CursorRecyclerAdapter;
 import com.bartovapps.androidtest.data.DbContract;
 import com.bartovapps.androidtest.utils.Utils;
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<SimpleViewHolder> {
@@ -72,17 +73,10 @@ public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<SimpleVie
 
     @Override
     public void onBindViewHolder (SimpleViewHolder holder, final Cursor cursor) {
-        Log.i(TAG, "onBindViewHolder: ");
         Uri imageUri = Utils.buildImageUri(cursor.getString(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_IMAGE_URI)));
-
+        Log.i(TAG, "onBindViewHolder image Uri:  " + imageUri);
         Picasso.with(mContext).load(imageUri).fit().centerCrop().into(holder.ivMovieImage);
-
-        holder.ivMovieImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(mContext, "Clicked on item: " + cursor.getPosition(), Toast.LENGTH_SHORT).show();
-            }
-        });
+//        Glide.with(mContext).load(imageUri).fitCenter().centerCrop().into(holder.ivMovieImage);
 
     }
 
@@ -117,11 +111,14 @@ public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<SimpleVie
 
 class SimpleViewHolder extends RecyclerView.ViewHolder
 {
-    public ImageView ivMovieImage;
+    ImageView ivMovieImage;
 
     public SimpleViewHolder (View itemView, int[] to)
     {
         super(itemView);
         ivMovieImage = (ImageView) itemView.findViewById(R.id.ivMovieImage);
+        setIsRecyclable(false);
     }
+
+
 }

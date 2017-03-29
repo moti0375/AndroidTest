@@ -13,5 +13,6 @@
     <string name="drawer_closed">Drawer Closed</string>
     <string name="drawer_opened">drawer_opened</string>
     <string name="network_options">Network Options</string>
+    <string name="api_pref_key">api_client</string>
 
 </resources>
