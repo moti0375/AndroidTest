@@ -102,10 +102,10 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(TAG, "on Resume - adding MoviesFragment");
+        Log.i(TAG, "onResume - adding MoviesFragment");
         if (getSupportFragmentManager().findFragmentByTag(MOVIES_FRAGMENT_TAG) == null) {
             FragmentTransaction transaction = mFragmentManager.beginTransaction();
-            transaction.add(R.id.fragmentContainer, moviesFeedFragment, MOVIES_FRAGMENT_TAG).commit();
+            transaction.replace(R.id.fragmentContainer, moviesFeedFragment, MOVIES_FRAGMENT_TAG).commit();
         }
     }
 
@@ -117,8 +117,12 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
 
         if (mTablet) {
+            transaction.setCustomAnimations(R.anim.fade_in,
+                    R.anim.fade_out);
             transaction.replace(R.id.detailedContainer, movieDetailsFragment, DETAILED_FRAGMENT_TAG).commit();
+
         } else {
+            transaction.setCustomAnimations(R.anim.sequencial_anim, R.anim.slide_left);
             transaction.add(R.id.fragmentContainer, movieDetailsFragment, DETAILED_FRAGMENT_TAG);
             transaction.addToBackStack(null);
             transaction.commit();
@@ -141,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
         }
 
         int itemId = item.getItemId();
-        switch (itemId){
+        switch (itemId) {
             case R.id.top_rated:
 //                getSupportActionBar().setTitle(getString(R.string.top_rated));
                 break;

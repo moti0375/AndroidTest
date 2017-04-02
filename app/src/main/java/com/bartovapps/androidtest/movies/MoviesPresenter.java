@@ -104,12 +104,12 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
                         .subscribe(new Subscriber<SearchResponse>() {
                             @Override
                             public void onCompleted() {
-
+                                Log.i(TAG, "Observable onCompleted");
                             }
 
                             @Override
                             public void onError(Throwable e) {
-
+                                Log.e(TAG, "Observable onError: " + e.getMessage());
                             }
 
                             @Override
@@ -253,13 +253,15 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
     }
 
     private SearchResponse getMoviesWithOkHttp(Uri uri) throws IOException {
+        Log.i(TAG, "getMoviesWithOkHttp uri: " + uri);
         OkHttpClient client = new OkHttpClient();
         okhttp3.Request request = new okhttp3.Request.Builder().url(uri.toString()).build();
         okhttp3.Response response = client.newCall(request).execute();
         if (response.isSuccessful()) {
             SearchResponse searchResponse = gson.fromJson(response.body().charStream(), SearchResponse.class);
-            Log.i(TAG, "getMoviesWithOkHttp: got " + mMovies.size() + " movies..");
             return searchResponse;
+        }else{
+            Log.e(TAG, "getMoviesWithOkHttp error code: " + response.code());
         }
         return null;
     }

@@ -16,6 +16,7 @@
     tools:context="com.bartovapps.androidtest.MainActivity"
     android:background="@color/appBackground">
 
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

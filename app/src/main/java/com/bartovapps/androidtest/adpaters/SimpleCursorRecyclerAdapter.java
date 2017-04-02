@@ -39,6 +39,7 @@ import com.bartovapps.androidtest.adpaters.CursorRecyclerAdapter;
 import com.bartovapps.androidtest.data.DbContract;
 import com.bartovapps.androidtest.utils.Utils;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.squareup.picasso.Picasso;
 
 public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<SimpleViewHolder> {
@@ -50,7 +51,7 @@ public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<SimpleVie
     private String[] mOriginalFrom;
     private Context mContext;
 
-    public SimpleCursorRecyclerAdapter (Context context, int layout, Cursor c, String[] from, int[] to) {
+    public SimpleCursorRecyclerAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
         super(c);
         mLayout = layout;
         mTo = to;
@@ -65,18 +66,23 @@ public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<SimpleVie
     }
 
     @Override
-    public SimpleViewHolder onCreateViewHolder (ViewGroup parent, int viewType) {
+    public SimpleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.movie_list_item, parent, false);
         return new SimpleViewHolder(v, mTo);
     }
 
     @Override
-    public void onBindViewHolder (SimpleViewHolder holder, final Cursor cursor) {
+    public void onBindViewHolder(SimpleViewHolder holder, final Cursor cursor) {
         Uri imageUri = Utils.buildImageUri(cursor.getString(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_IMAGE_URI)));
         Log.i(TAG, "onBindViewHolder image Uri:  " + imageUri);
-        Picasso.with(mContext).load(imageUri).fit().centerCrop().into(holder.ivMovieImage);
-//        Glide.with(mContext).load(imageUri).fitCenter().centerCrop().into(holder.ivMovieImage);
+//        Picasso.with(mContext).load(imageUri).fit().centerCrop().into(holder.ivMovieImage);
+        Glide.with(mContext)
+                .load(imageUri)
+                .centerCrop()
+                .crossFade(200)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(holder.ivMovieImage);
 
     }
 
@@ -84,7 +90,7 @@ public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<SimpleVie
      * Create a map from an array of strings to an array of column-id integers in cursor c.
      * If c is null, the array will be discarded.
      *
-     * @param c the cursor to find the columns from
+     * @param c    the cursor to find the columns from
      * @param from the Strings naming the columns of interest
      */
     private void findColumns(Cursor c, String[] from) {
@@ -104,20 +110,18 @@ public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<SimpleVie
 
     @Override
     public Cursor swapCursor(Cursor c) {
-       // findColumns(c, mOriginalFrom);
+        // findColumns(c, mOriginalFrom);
         return super.swapCursor(c);
     }
 }
 
-class SimpleViewHolder extends RecyclerView.ViewHolder
-{
+class SimpleViewHolder extends RecyclerView.ViewHolder {
     ImageView ivMovieImage;
 
-    public SimpleViewHolder (View itemView, int[] to)
-    {
+    public SimpleViewHolder(View itemView, int[] to) {
         super(itemView);
         ivMovieImage = (ImageView) itemView.findViewById(R.id.ivMovieImage);
-        setIsRecyclable(false);
+
     }
 
 

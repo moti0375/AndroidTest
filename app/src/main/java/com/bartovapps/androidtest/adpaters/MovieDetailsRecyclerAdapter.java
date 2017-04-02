@@ -15,6 +15,7 @@ import com.bartovapps.androidtest.model.Movie;
 import com.bartovapps.androidtest.model.Trailer;
 import com.bartovapps.androidtest.utils.Utils;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -81,7 +82,11 @@ public class MovieDetailsRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
 
             ((HeaderViewHolder) holder).tvTitle.setText(movie.title);
            // Picasso.with(context).load(Utils.buildImageUri(movie.poster_path)).fit().centerCrop().into(((HeaderViewHolder) holder).ivHeaderImage);
-            Glide.with(context).load(Utils.buildImageUri(movie.poster_path)).fitCenter().centerCrop().into(((HeaderViewHolder) holder).ivHeaderImage);
+            Glide.with(context)
+                    .load(Utils.buildImageUri(movie.poster_path))
+                    .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .into(((HeaderViewHolder) holder).ivHeaderImage);
 
             try {
                 Date date = apiDateFormat.parse(movie.release_date);

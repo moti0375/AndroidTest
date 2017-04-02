@@ -14,9 +14,9 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:textColor="@android:color/white"
-        android:textStyle="bold|italic"
-        android:singleLine="true"
-        android:textSize="60sp"
+        android:textStyle="italic"
+        android:maxLines="1"
+        android:textSize="50sp"
         android:gravity="center"/>
 
     <ImageView

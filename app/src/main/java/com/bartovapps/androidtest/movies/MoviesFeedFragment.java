@@ -1,6 +1,7 @@
 package com.bartovapps.androidtest.movies;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -120,6 +121,7 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
         mFragmentEventListener = (FragmentEventListener) context;
     }
 
+
     @Override
     public void onStop() {
         super.onStop();
@@ -232,8 +234,8 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
     };
 
     private void readPreferences() {
-        mSearch = sharedPreferences.getString("search", ApiHelper.API_TOP_RATED).toUpperCase().replace("_"," ");
-        getActivity().setTitle(mSearch);
+        mSearch = sharedPreferences.getString("search", ApiHelper.API_TOP_RATED);
+        getActivity().setTitle(mSearch.toUpperCase().replace("_", " "));
     }
     private void saveSearchToPreferences(String search){
         SharedPreferences.Editor editor = sharedPreferences.edit();
