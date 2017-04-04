@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/appBackground"
+    android:background="@color/colorPrimary"
     tools:context="com.bartovapps.androidtest.movies_details.MovieDetailsFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -54,8 +54,9 @@
         android:id="@+id/tvOverview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ivDetailedImage"
+        android:layout_below="@+id/tvRating"
         android:padding="@dimen/textview_padding"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_toEndOf="@+id/ivDetailedImage" />
 
 </RelativeLayout>

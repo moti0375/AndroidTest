@@ -22,7 +22,14 @@ import com.bartovapps.androidtest.adpaters.MovieDetailsRecyclerAdapter;
 import com.bartovapps.androidtest.model.Movie;
 import com.bartovapps.androidtest.model.Trailer;
 import com.bartovapps.androidtest.utils.Utils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 
 /**
@@ -33,6 +40,7 @@ public class MovieDetailsFragment extends Fragment implements MovieDetailsRecycl
     public static final String TAG = MovieDetailsFragment.class.getSimpleName();
     public static final String MOVIE_ID_ARG = "movieId";
     ImageView ivMovieImage;
+    TextView tvTitle;
     TextView tvReleased;
     TextView tvOverview;
     TextView tvRating;
@@ -46,12 +54,15 @@ public class MovieDetailsFragment extends Fragment implements MovieDetailsRecycl
     SharedPreferences sharedPreferences;
     int mApiClient;
 
+    private SimpleDateFormat apiDateFormat;
+    private SimpleDateFormat appDateFormat;
+
+
     public static MovieDetailsFragment newInstance(long movieId) {
         MovieDetailsFragment f = new MovieDetailsFragment();
         Bundle b = new Bundle();
         b.putLong(MOVIE_ID_ARG, movieId);
         f.setArguments(b);
-
         return f;
     }
 
@@ -62,6 +73,9 @@ public class MovieDetailsFragment extends Fragment implements MovieDetailsRecycl
         gson = new Gson();
         mPresenter = new DetailsPresenter(getActivity(), this);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        appDateFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+
         // movie = getActivity().getContentResolver().query(CONTENT_URI, )
     }
 
@@ -70,8 +84,8 @@ public class MovieDetailsFragment extends Fragment implements MovieDetailsRecycl
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_movie_details, container, false);
-        setViews(view);
         mMovieId = getArguments().getLong(MOVIE_ID_ARG);
+        setViews(view);
         mApiClient = Integer.parseInt(sharedPreferences.getString("api_client", "" + getResources().getInteger(R.integer.Volley)));
         mPresenter.setApiClient(mApiClient);
         loadMovieDetail(mMovieId);
@@ -85,7 +99,12 @@ public class MovieDetailsFragment extends Fragment implements MovieDetailsRecycl
     }
 
     private void setViews(View view) {
+        tvTitle = (TextView) view.findViewById(R.id.tvTitle);
         ivMovieImage = (ImageView) view.findViewById(R.id.ivDetailedImage);
+        String transitionName = getString(R.string.shared_transition_name) + mMovieId;
+        Log.i(TAG, "TransitionName: " + transitionName);
+        ivMovieImage.setTransitionName(transitionName);
+
         tvReleased = (TextView) view.findViewById(R.id.tvReleased);
         tvOverview = (TextView) view.findViewById(R.id.tvOverview);
         tvRating = (TextView) view.findViewById(R.id.tvRating);
@@ -111,6 +130,25 @@ public class MovieDetailsFragment extends Fragment implements MovieDetailsRecycl
     }
     private void refreshDisplay() {
         if (mMovie != null) {
+            Date date = null;
+            try {
+                date = apiDateFormat.parse(mMovie.release_date);
+                tvReleased.setText(appDateFormat.format(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            tvTitle.setText(mMovie.title);
+            tvOverview.setText(mMovie.overview);
+            tvDuration.setText(mMovie.runtime + "Min");
+            tvRating.setText(mMovie.vote_average + "/10");
+
+            Glide.with(getActivity())
+                    .load(Utils.buildImageUri(mMovie.poster_path))
+                    .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .into((ivMovieImage));
+
+
             movieDetailsRecyclerAdapter.updateVideos(mMovie);
         }
     }

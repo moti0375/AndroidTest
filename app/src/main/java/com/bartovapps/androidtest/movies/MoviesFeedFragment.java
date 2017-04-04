@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.bartovapps.androidtest.adpaters.MovieViewHolder;
 import com.bartovapps.androidtest.api.ApiHelper;
 import com.bartovapps.androidtest.R;
 import com.bartovapps.androidtest.adpaters.RecyclerItemClickListener;
@@ -61,7 +62,6 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -81,8 +81,9 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
 
             @Override
             public void onItemClick(View view, int position) {
+
                 Toast.makeText(getActivity(), position + " Item clicked.. ", Toast.LENGTH_SHORT).show();
-                mPresenter.movieItemClicked(position);
+                mPresenter.movieItemClicked(view, position);
             }
 
             @Override
@@ -101,9 +102,11 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
 //        rvImagesRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(MainActivity.this, rvImagesRecyclerView, new ClickListener() {
     }
 
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         mApiClient = Integer.parseInt(sharedPreferences.getString("api_client", "" + getResources().getInteger(R.integer.Volley)));
         mPresenter.setApiClient(mApiClient);
 
@@ -180,14 +183,13 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
     }
 
     @Override
-    public void showMovieDetails(long movieId) {
+    public void showMovieDetails(View v, long movieId) {
         Log.i(TAG, "showMovieDetails called..");
-        mFragmentEventListener.onFragmentEvent(movieId);
-
+        mFragmentEventListener.onFragmentEvent(MoviesFeedFragment.this, v, movieId);
     }
 
     public interface FragmentEventListener {
-        void onFragmentEvent(long movie_api_id);
+        void onFragmentEvent(Fragment f, View v, long movie_api_id);
     }
 
 
@@ -240,6 +242,10 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
     private void saveSearchToPreferences(String search){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("search", search).commit();
+    }
+
+    public MovieViewHolder getViewHolder(){
+        return moviesRecyclerAdapter.getViewHolder();
     }
 
 

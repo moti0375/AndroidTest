@@ -104,11 +104,12 @@ public class MovieDetailsRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
         } else if (holder instanceof ItemViewHolder) {
             Log.i(TAG, "onBindViewHolder instanceof ItemViewHolder");
             ((ItemViewHolder) holder).tvVideoTitle = (TextView) ((ItemViewHolder) holder).itemView.findViewById(R.id.tvVideoTitle);
-            ((ItemViewHolder) holder).tvVideoTitle.setText(data.get(position - 1).name);
+//            ((ItemViewHolder) holder).tvVideoTitle.setText(data.get(position - 1).name);
+            ((ItemViewHolder) holder).tvVideoTitle.setText(data.get(position).name);
 
             ((ItemViewHolder) holder).itemView.setOnClickListener(view -> {
-                Toast.makeText(context, "Trailer " + (position - 1) + "was clicked..", Toast.LENGTH_SHORT).show();
-                clickListener.onItemClicked(data.get(position - 1));
+                Toast.makeText(context, "Trailer " + (position) + "was clicked..", Toast.LENGTH_SHORT).show();
+                clickListener.onItemClicked(data.get(position));
             });
 
             //cast holder to VHHeader and set data for header.
@@ -117,8 +118,8 @@ public class MovieDetailsRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0)
-            return TYPE_HEADER;
+//        if (position == 0)
+//            return TYPE_HEADER;
 
         return TYPE_ITEM;
     }
@@ -130,10 +131,12 @@ public class MovieDetailsRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
         if (movie == null) {
             count = 0;
         } else {
-            if (data.isEmpty()) {
-                count = 1;
+            if (data.isEmpty()) { // No trailers, there will be header only
+//                count = 1;
+                count = 0;
             } else {
-                count = data.size() + 1;
+                //count = data.size() + 1; //Number of trailers + header
+                count = data.size();
             }
         }
 

@@ -2,17 +2,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/activity_horizontal_margin"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.bartovapps.androidtest.movies_details.MovieDetailsFragment"
     android:background="@color/appBackground">
 
     <!-- TODO: Update blank fragment layout -->
+     <include android:id="@+id/details_header"
 
+            layout="@layout/header_list_item"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvMovieDetails"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_below="@+id/details_header"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         </android.support.v7.widget.RecyclerView>
 

@@ -14,5 +14,7 @@
     <string name="drawer_opened">drawer_opened</string>
     <string name="network_options">Network Options</string>
     <string name="api_pref_key">api_client</string>
+    <string name="shared_transition_name">shared_movie_image</string>
+
 
 </resources>

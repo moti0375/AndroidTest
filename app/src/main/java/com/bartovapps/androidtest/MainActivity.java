@@ -1,24 +1,34 @@
 package com.bartovapps.androidtest;
 
+import android.animation.LayoutTransition;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
+import com.bartovapps.androidtest.animations.DetailsTransition;
+import com.bartovapps.androidtest.movies_details.MovieDetailsActivity;
 import com.bartovapps.androidtest.movies_details.MovieDetailsFragment;
 import com.bartovapps.androidtest.movies.MoviesFeedFragment;
+
+import static android.R.attr.transitionName;
 
 public class MainActivity extends AppCompatActivity implements MoviesFeedFragment.FragmentEventListener, MainActivityContract.View {
 
@@ -36,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
 
     FragmentManager mFragmentManager;
     MainActivityContract.Presenter mPresenter;
+    LayoutTransition layoutTransition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +60,10 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
     }
 
     private void setViews() {
+        layoutTransition = new LayoutTransition();
+        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fragmentContainer);
+        frameLayout.setLayoutTransition(layoutTransition);
+
         mTablet = findViewById(R.id.llWideScreen) != null;
 
         Log.i(TAG, "Tablet = " + mTablet);
@@ -111,21 +126,46 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
 
 
     @Override
-    public void onFragmentEvent(long movie_api_id) {
+    public void onFragmentEvent(Fragment f, View v, long movie_api_id) {
+
+        f.setSharedElementReturnTransition(new DetailsTransition());
+        f.setExitTransition(new DetailsTransition());
+
         movieDetailsFragment = MovieDetailsFragment.newInstance(movie_api_id);
+        movieDetailsFragment.setSharedElementEnterTransition(new DetailsTransition());
+        movieDetailsFragment.setEnterTransition(new DetailsTransition());
 
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        String transitionName = getString(R.string.shared_transition_name) + movie_api_id;
+        v.setTransitionName(transitionName);
 
         if (mTablet) {
             transaction.setCustomAnimations(R.anim.fade_in,
                     R.anim.fade_out);
-            transaction.replace(R.id.detailedContainer, movieDetailsFragment, DETAILED_FRAGMENT_TAG).commit();
+            transaction.replace(R.id.detailedContainer, movieDetailsFragment, DETAILED_FRAGMENT_TAG);
+            transaction.addSharedElement(v, transitionName);
+            transaction.commit();
 
         } else {
-            transaction.setCustomAnimations(R.anim.sequencial_anim, R.anim.slide_left);
-            transaction.add(R.id.fragmentContainer, movieDetailsFragment, DETAILED_FRAGMENT_TAG);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            Intent intent = new Intent(MainActivity.this, MovieDetailsActivity.class);
+            intent.putExtra(INTENT_LONG_EXTRA, movie_api_id);
+
+            ActivityOptionsCompat options =
+
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(this,
+                            v,   // Starting view
+                            transitionName    // The String
+                    );
+            //Start the Intent
+            ActivityCompat.startActivity(this, intent, options.toBundle());
+
+            // startActivity(intent);
+//            Log.i(TAG, "TransitionName: " + transitionName);
+//            //transaction.setCustomAnimations(R.anim.slide_right, R.anim.slide_left);
+//            transaction.replace(R.id.fragmentContainer, movieDetailsFragment, DETAILED_FRAGMENT_TAG);
+//            transaction.addToBackStack(DETAILED_FRAGMENT_TAG);
+//            transaction.addSharedElement(v, transitionName);
+//            transaction.commit();
         }
     }
 

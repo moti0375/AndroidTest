@@ -2,6 +2,7 @@ package com.bartovapps.androidtest.movies;
 
 import android.database.Cursor;
 import android.net.Uri;
+import android.view.View;
 
 import com.bartovapps.androidtest.BasePresenter;
 import com.bartovapps.androidtest.BaseView;
@@ -19,13 +20,13 @@ public interface MoviesContract {
         void showMovies(Cursor cursor);
         void showLoadMoviesError();
         void showNoMovies();
-        void showMovieDetails(long movieId);
+        void showMovieDetails(android.view.View v, long movieId);
     }
 
     interface Presenter extends BasePresenter{
 
         void loadMovies(String search, boolean forceUpdate);
-        void movieItemClicked(int position);
+        void movieItemClicked(android.view.View v, int position);
     }
 
 }

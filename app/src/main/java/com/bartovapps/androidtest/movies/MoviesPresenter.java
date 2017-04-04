@@ -10,6 +10,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.View;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -130,13 +131,13 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
     }
 
     @Override
-    public void movieItemClicked(int position) {
+    public void movieItemClicked(View v, int position) {
         if (mCursor != null && mCursor.getCount() > 0) {
             mCursor.moveToPosition(position);
 
             long movieId = mCursor.getLong(mCursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_API_ID));
             Log.i(TAG, "onItemClick: movie " + movieId + " was clicked");
-            movieView.showMovieDetails(movieId);
+            movieView.showMovieDetails(v, movieId);
         }
     }
 

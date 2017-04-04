@@ -42,7 +42,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.squareup.picasso.Picasso;
 
-public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<SimpleViewHolder> {
+public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<MovieViewHolder> {
     public static final String TAG = SimpleCursorRecyclerAdapter.class.getSimpleName();
 
     private int mLayout;
@@ -50,6 +50,7 @@ public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<SimpleVie
     private int[] mTo;
     private String[] mOriginalFrom;
     private Context mContext;
+    MovieViewHolder mViewHolder;
 
     public SimpleCursorRecyclerAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
         super(c);
@@ -66,14 +67,15 @@ public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<SimpleVie
     }
 
     @Override
-    public SimpleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.movie_list_item, parent, false);
-        return new SimpleViewHolder(v, mTo);
+        mViewHolder = new MovieViewHolder(v);
+        return mViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(SimpleViewHolder holder, final Cursor cursor) {
+    public void onBindViewHolder(MovieViewHolder holder, final Cursor cursor) {
         Uri imageUri = Utils.buildImageUri(cursor.getString(cursor.getColumnIndex(DbContract.MoviesEntry.COLUMN_IMAGE_URI)));
         Log.i(TAG, "onBindViewHolder image Uri:  " + imageUri);
 //        Picasso.with(mContext).load(imageUri).fit().centerCrop().into(holder.ivMovieImage);
@@ -113,16 +115,11 @@ public class SimpleCursorRecyclerAdapter extends CursorRecyclerAdapter<SimpleVie
         // findColumns(c, mOriginalFrom);
         return super.swapCursor(c);
     }
-}
 
-class SimpleViewHolder extends RecyclerView.ViewHolder {
-    ImageView ivMovieImage;
-
-    public SimpleViewHolder(View itemView, int[] to) {
-        super(itemView);
-        ivMovieImage = (ImageView) itemView.findViewById(R.id.ivMovieImage);
-
+    public MovieViewHolder getViewHolder() {
+        return mViewHolder;
     }
 
-
 }
+
+

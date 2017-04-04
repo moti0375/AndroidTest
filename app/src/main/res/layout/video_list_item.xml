@@ -9,13 +9,13 @@
         android:layout_height="@dimen/video_image_height"
         android:layout_margin="5dp"
         android:layout_gravity="center"
-        android:src="@drawable/video_play_icon"/>
+        android:src="@drawable/ic_action_youtube"/>
 
     <TextView
         android:id="@+id/tvVideoTitle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
+        android:gravity="center_vertical|start"
         android:textAppearance="?android:attr/textAppearanceLarge"/>
 
 </LinearLayout>
