@@ -6,31 +6,25 @@ import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bartovapps.androidtest.R;
 import com.bartovapps.androidtest.api.ApiClient;
 import com.bartovapps.androidtest.api.ApiHelper;
-import com.bartovapps.androidtest.api.ApiInterface;
+import com.bartovapps.androidtest.api.RetrofitService;
 import com.bartovapps.androidtest.model.Movie;
-import com.bartovapps.androidtest.model.SearchResponse;
 import com.bartovapps.androidtest.model.Trailer;
-import com.bartovapps.androidtest.movies.MoviesPresenter;
 import com.bartovapps.androidtest.utils.Utils;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 
 import okhttp3.OkHttpClient;
-import retrofit2.Call;
-import retrofit2.Callback;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 
 /**
@@ -44,12 +38,14 @@ class DetailsPresenter implements DetailsContract.Presenter {
     private Gson gson;
     private Movie mMovie;
     private DetailsContract.View detailsView;
-    private int mApiClient;
+    private int mPrefApi;
     private Subscription subscription;
+    private ApiClient mApiClient;
 
 
     public DetailsPresenter(Context context, DetailsContract.View view){
         Log.i(TAG, "DetailsPresenter created");
+        mApiClient = new ApiClient();
         mContext = context;
         detailsView = view;
         gson = new Gson();
@@ -59,17 +55,11 @@ class DetailsPresenter implements DetailsContract.Presenter {
     public void subscribe() {
 
     }
-
     @Override
     public void unsubscribe() {
         if(subscription != null && !subscription.isUnsubscribed()){
             subscription.isUnsubscribed();
         }
-    }
-
-    @Override
-    public void setApiClient(int apiClient) {
-        mApiClient = apiClient;
     }
 
     @Override
@@ -79,74 +69,37 @@ class DetailsPresenter implements DetailsContract.Presenter {
 
     @Override
     public void loadMovieDetails(long movie_api_id) {
-
-        if(mApiClient == mContext.getResources().getInteger(R.integer.Volley)){
-            getDataWithVolley(Utils.buildMovieInfoQueryString(movie_api_id));
-        }else if(mApiClient == mContext.getResources().getInteger(R.integer.Retrofit)){
-            getDataWithRetrofit(movie_api_id);
-        }else if(mApiClient == mContext.getResources().getInteger(R.integer.OkHttp)){
-            subscription = getObservable(Utils.buildMovieInfoQueryString(movie_api_id))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<Movie>() {
-                        @Override
-                        public void onCompleted() {
-                            Log.i(TAG, "onCompleted");
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            Log.i(TAG, "onError");
-                        }
-
-                        @Override
-                        public void onNext(Movie movie) {
-                            mMovie = movie;
-                            detailsView.showMovieDetails(mMovie);
-                        }
-                    });
-        }else{
-            getDataWithVolley(Utils.buildMovieInfoQueryString(movie_api_id));
-        }
-
+        getDataWithRetrofit(movie_api_id);
     }
 
 
-    private void getDataWithVolley(Uri url) {
-        Log.i(TAG, "getDataWithVolley, Uri: " + url.toString());
-        RequestQueue queue = Volley.newRequestQueue(mContext);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url.toString(),
-                response -> {
-                    Log.i(TAG, "Volley onResponse: " + response);
-
-                    mMovie = gson.fromJson(response, Movie.class);
-                    Log.i(TAG, "Trailer Search Response: " + mMovie.toString());
-                    detailsView.showMovieDetails(mMovie);
-                }, error -> Log.i(TAG, "Volley onErrorResponse: " + error));
-// Add the request to the RequestQueue.
-        queue.add(stringRequest);
-    }
 
     private void getDataWithRetrofit(long movie_id) {
         Log.i(TAG, "getDataWithRetrofit called");
-        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-        Call<Movie> call = apiService.getMovieDetails(movie_id, ApiHelper.TMDB_API_KEY);
-        Log.i(TAG, "call url: " + call.request().url());
+        RetrofitService apiService = mApiClient.getApiService();
 
-        call.enqueue(new Callback<Movie>() {
-            @Override
-            public void onResponse(Call<Movie> call, retrofit2.Response<Movie> response) {
-                mMovie = response.body();
-                Log.i(TAG, "Retrofit onResponse: " + mMovie);
-                detailsView.showMovieDetails(mMovie);
-            }
+        apiService.getMovieDetails(movie_id, ApiHelper.TMDB_API_KEY)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Movie>() {
+                    @Override
+                    public void onCompleted() {
 
-            @Override
-            public void onFailure(Call<Movie> call, Throwable t) {
-                Log.e(TAG, "Retrofit onFailure: " + t.getMessage());
-            }
-        });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Movie movie) {
+                        Log.i(TAG, "onNext: Got your movie details you asshole!");
+                        detailsView.showMovieDetails(movie);
+                    }
+                });
+
     }
 
     private Movie getMovieWithOkHttp(Uri uri) throws IOException {

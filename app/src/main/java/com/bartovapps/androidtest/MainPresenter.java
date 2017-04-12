@@ -27,11 +27,6 @@ class MainPresenter implements MainActivityContract.Presenter {
     }
 
     @Override
-    public void setApiClient(int apiClient) {
-
-    }
-
-    @Override
     public void drawerSettingsItemClicked(int itemId) {
         switch (itemId) {
             case R.id.settings:

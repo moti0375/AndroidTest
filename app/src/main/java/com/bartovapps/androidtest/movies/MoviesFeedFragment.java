@@ -107,9 +107,6 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mApiClient = Integer.parseInt(sharedPreferences.getString("api_client", "" + getResources().getInteger(R.integer.Volley)));
-        mPresenter.setApiClient(mApiClient);
-
         if (savedInstanceState == null) {
             mPresenter.loadMovies(mSearch, true);
         } else {
@@ -228,9 +225,7 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if(key.equals(getResources().getString(R.string.api_pref_key))){
-                mApiClient = Integer.parseInt(sharedPreferences.getString(key, "10"));
                 Log.i(TAG, "onSharedPreferenceChanged called, changed key: " + key + ", value = " + mApiClient);
-                mPresenter.setApiClient(mApiClient);
             }
         }
     };
@@ -241,7 +236,7 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
     }
     private void saveSearchToPreferences(String search){
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("search", search).commit();
+        editor.putString("search", search).apply();
     }
 
     public MovieViewHolder getViewHolder(){

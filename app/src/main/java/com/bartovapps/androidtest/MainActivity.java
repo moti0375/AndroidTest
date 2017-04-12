@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
 
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         String transitionName = getString(R.string.shared_transition_name) + movie_api_id;
+        Log.i(TAG, "transitionName: " + transitionName);
         v.setTransitionName(transitionName);
 
         if (mTablet) {
@@ -151,12 +152,10 @@ public class MainActivity extends AppCompatActivity implements MoviesFeedFragmen
             intent.putExtra(INTENT_LONG_EXTRA, movie_api_id);
 
             ActivityOptionsCompat options =
-
                     ActivityOptionsCompat.makeSceneTransitionAnimation(this,
                             v,   // Starting view
                             transitionName    // The String
                     );
-            //Start the Intent
             ActivityCompat.startActivity(this, intent, options.toBundle());
 
             // startActivity(intent);

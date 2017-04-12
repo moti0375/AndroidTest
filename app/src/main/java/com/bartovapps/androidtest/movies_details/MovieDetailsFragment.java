@@ -86,8 +86,6 @@ public class MovieDetailsFragment extends Fragment implements MovieDetailsRecycl
         View view = inflater.inflate(R.layout.fragment_movie_details, container, false);
         mMovieId = getArguments().getLong(MOVIE_ID_ARG);
         setViews(view);
-        mApiClient = Integer.parseInt(sharedPreferences.getString("api_client", "" + getResources().getInteger(R.integer.Volley)));
-        mPresenter.setApiClient(mApiClient);
         loadMovieDetail(mMovieId);
         return view;
     }
@@ -130,7 +128,7 @@ public class MovieDetailsFragment extends Fragment implements MovieDetailsRecycl
     }
     private void refreshDisplay() {
         if (mMovie != null) {
-            Date date = null;
+            Date date;
             try {
                 date = apiDateFormat.parse(mMovie.release_date);
                 tvReleased.setText(appDateFormat.format(date));
@@ -139,8 +137,8 @@ public class MovieDetailsFragment extends Fragment implements MovieDetailsRecycl
             }
             tvTitle.setText(mMovie.title);
             tvOverview.setText(mMovie.overview);
-            tvDuration.setText(mMovie.runtime + "Min");
-            tvRating.setText(mMovie.vote_average + "/10");
+            tvDuration.setText(String.format(mMovie.runtime + "%s", "Min"));
+            tvRating.setText(String.format(mMovie.vote_average + "%s", "/10"));
 
             Glide.with(getActivity())
                     .load(Utils.buildImageUri(mMovie.poster_path))

@@ -7,5 +7,4 @@ package com.bartovapps.androidtest;
 public interface BasePresenter {
     void subscribe();
     void unsubscribe();
-    void setApiClient(int apiClient);
 }
