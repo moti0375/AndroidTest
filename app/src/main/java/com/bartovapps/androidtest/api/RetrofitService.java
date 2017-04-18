@@ -20,7 +20,7 @@ public interface RetrofitService {
     Call<SearchResponse> getTopRatedMovies(@Query(ApiHelper.API_KEY_URL_PARAM) String apiKey);
 
     @GET("movie/{search}" )
-    Observable<SearchResponse> searchMovies(@Path("search") String search, @Query(ApiHelper.API_KEY_URL_PARAM) String apiKey);
+    Observable<SearchResponse> searchMovies(@Path("search") String search);
 
 
     @GET("movie/{id}?" + ApiHelper.API_APPEND_TO_RESP + "=videos")

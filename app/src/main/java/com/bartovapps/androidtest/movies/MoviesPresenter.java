@@ -9,6 +9,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.bartovapps.androidtest.api.ApiClient;
 import com.bartovapps.androidtest.api.ApiHelper;
@@ -116,7 +117,7 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
         Log.i(TAG, "getDataWithRetrofit called");
         RetrofitService apiService = mApiClient.getApiService();
 
-        mSearchObservable = apiService.searchMovies(search, ApiHelper.TMDB_API_KEY)
+        mSearchObservable = apiService.searchMovies(search)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
 
@@ -124,9 +125,17 @@ public class MoviesPresenter implements MoviesContract.Presenter, LoaderManager.
             Log.i(TAG, "onNext: I've got your search response Asshole!!");
             mMovies = searchResponse.results;
             Log.i(TAG, "Got " + mMovies.size() + " movies");
+
             addMoviesToDb(mMovies);
             mLoaderManager.restartLoader(LOADER_ID, null, MoviesPresenter.this);
-        }, (e)->{}, () -> {});
+        }, (e)->{
+            Log.e(TAG, "onError: " + e.getMessage());
+            Toast.makeText(mContext, "Error loading movies from server", Toast.LENGTH_SHORT).show();
+        }, (
+
+        ) -> {
+            Log.i(TAG, "onComplete");
+        });
 
 
     }

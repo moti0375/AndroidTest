@@ -41,6 +41,7 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
 
     SharedPreferences sharedPreferences;
     MoviesContract.Presenter mPresenter;
+    GridLayoutManager mGridManager;
 
     public static MoviesFeedFragment newInstance() {
         return new MoviesFeedFragment();
@@ -81,8 +82,6 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
 
             @Override
             public void onItemClick(View view, int position) {
-
-                Toast.makeText(getActivity(), position + " Item clicked.. ", Toast.LENGTH_SHORT).show();
                 mPresenter.movieItemClicked(view, position);
             }
 
@@ -96,9 +95,8 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
         rvMoviesFeed.setAdapter(moviesRecyclerAdapter);
         rvMoviesFeed.setHasFixedSize(true);
 //        rvMoviesFeed.addItemDecoration(new DividerItemDecoration(ContextCompat.getDrawable(this, R.drawable.divider_drawable)));
-        GridLayoutManager manager = new GridLayoutManager(getActivity(), 3);
-
-        rvMoviesFeed.setLayoutManager(manager);
+        mGridManager = new GridLayoutManager(getActivity(), 3);
+        rvMoviesFeed.setLayoutManager(mGridManager);
 //        rvImagesRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(MainActivity.this, rvImagesRecyclerView, new ClickListener() {
     }
 
@@ -154,6 +152,13 @@ public class MoviesFeedFragment extends Fragment implements MoviesContract.View 
 
     private void refreshDisplay(Cursor cursor) {
         Log.i(TAG, "About to refresh display with " + ((cursor == null) ? null : cursor.getCount()) + " items");
+        if(cursor.getCount() %3 == 0){
+            mGridManager.setSpanCount(3);
+        }else{
+            mGridManager.setSpanCount(2);
+        }
+
+        rvMoviesFeed.setLayoutManager(mGridManager);
         moviesRecyclerAdapter.changeCursor(cursor);
     }
 

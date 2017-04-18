@@ -15,14 +15,16 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <include layout="@layout/header_list_item"/>
+        <include layout="@layout/header_list_item" />
 
     </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvMovieDetails"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="@color/appBackground">
 
     </android.support.v7.widget.RecyclerView>
 
